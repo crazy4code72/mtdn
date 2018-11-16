@@ -38,7 +38,7 @@
                     result.Add(enumerator.Current);
                 }
 
-                return this.Json(result);
+                return Json(result);
             }
         }
 
@@ -50,7 +50,7 @@
 
             using (ITransaction tx = this.stateManager.CreateTransaction())
             {
-                await votesDictionary.AddOrUpdateAsync(tx, name, 1, (key, oldvalue) => oldvalue + 1);
+                await votesDictionary.AddOrUpdateAsync(tx, name, 1, (key, oldValue) => oldValue + 1);
                 await tx.CommitAsync();
             }
 
@@ -71,10 +71,8 @@
                     await tx.CommitAsync();
                     return new OkResult();
                 }
-                else
-                {
-                    return new NotFoundResult();
-                }
+
+                return new NotFoundResult();
             }
         }
     }
