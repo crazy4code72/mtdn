@@ -59,8 +59,6 @@
         /// Constructs a service name for a specific poll.
         /// Example: fabric:/VotingApplication/polls/name-of-poll
         /// </summary>
-        /// <param name="poll"></param>
-        /// <returns></returns>
         internal static Uri GetVotingDataServiceName(ServiceContext context)
         {
             return new Uri($"{context.CodePackageActivationContext.ApplicationName}/VotingData");

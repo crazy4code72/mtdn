@@ -21,22 +21,25 @@ namespace VotingWeb.Controllers
         private readonly string reverseProxyBaseUri;
         private readonly StatelessServiceContext serviceContext;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public VotesController(HttpClient httpClient, StatelessServiceContext context, FabricClient fabricClient)
         {
             this.fabricClient = fabricClient;
             this.httpClient = httpClient;
-            this.serviceContext = context;
-            this.reverseProxyBaseUri = Environment.GetEnvironmentVariable("ReverseProxyBaseUri");
+            serviceContext = context;
+            reverseProxyBaseUri = Environment.GetEnvironmentVariable("ReverseProxyBaseUri");
         }
 
         // GET: api/Votes
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(this.serviceContext);
-            Uri proxyAddress = this.GetProxyAddress(serviceName);
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
 
-            ServicePartitionList partitions = await this.fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
 
             List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
 
@@ -45,7 +48,7 @@ namespace VotingWeb.Controllers
                 string proxyUrl =
                     $"{proxyAddress}/api/VoteData?PartitionKey={((Int64RangePartitionInformation) partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
 
-                using (HttpResponseMessage response = await this.httpClient.GetAsync(proxyUrl))
+                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
                 {
                     if (response.StatusCode != System.Net.HttpStatusCode.OK)
                     {
@@ -56,24 +59,24 @@ namespace VotingWeb.Controllers
                 }
             }
 
-            return this.Json(result);
+            return Json(result);
         }
 
         // PUT: api/Votes/name
         [HttpPut("{name}")]
         public async Task<IActionResult> Put(string name)
         {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(this.serviceContext);
-            Uri proxyAddress = this.GetProxyAddress(serviceName);
-            long partitionKey = this.GetPartitionKey(name);
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            long partitionKey = GetPartitionKey(name);
             string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
             StringContent putContent = new StringContent($"{{ 'name' : '{name}' }}", Encoding.UTF8, "application/json");
             putContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            using (HttpResponseMessage response = await this.httpClient.PutAsync(proxyUrl, putContent))
+            using (HttpResponseMessage response = await httpClient.PutAsync(proxyUrl, putContent))
             {
-                return new ContentResult()
+                return new ContentResult
                 {
                     StatusCode = (int) response.StatusCode,
                     Content = await response.Content.ReadAsStringAsync()
@@ -85,22 +88,21 @@ namespace VotingWeb.Controllers
         [HttpDelete("{name}")]
         public async Task<IActionResult> Delete(string name)
         {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(this.serviceContext);
-            Uri proxyAddress = this.GetProxyAddress(serviceName);
-            long partitionKey = this.GetPartitionKey(name);
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            long partitionKey = GetPartitionKey(name);
             string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
-            using (HttpResponseMessage response = await this.httpClient.DeleteAsync(proxyUrl))
+            using (HttpResponseMessage response = await httpClient.DeleteAsync(proxyUrl))
             {
                 if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    return this.StatusCode((int) response.StatusCode);
+                    return StatusCode((int) response.StatusCode);
                 }
             }
 
             return new OkResult();
         }
-
 
         /// <summary>
         /// Constructs a reverse proxy URL for a given service.
@@ -110,7 +112,7 @@ namespace VotingWeb.Controllers
         /// <returns></returns>
         private Uri GetProxyAddress(Uri serviceName)
         {
-            return new Uri($"{this.reverseProxyBaseUri}{serviceName.AbsolutePath}");
+            return new Uri($"{reverseProxyBaseUri}{serviceName.AbsolutePath}");
         }
 
         /// <summary>

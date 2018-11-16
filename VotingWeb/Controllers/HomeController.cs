@@ -6,12 +6,12 @@
     {
         public IActionResult Index()
         {
-            return this.View();
+            return View();
         }
 
         public IActionResult Error()
         {
-            return this.View();
+            return View();
         }
     }
 }
