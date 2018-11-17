@@ -14,9 +14,9 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     $scope.remove = function (item) {
         $http.delete('api/Votes/' + item)
-            .then(function (data, status) {
+            .then(function(data, status) {
                 $scope.refresh();
-            })
+            });
     };
 
     $scope.add = function (item) {
@@ -29,6 +29,6 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             .then(function (data, status) {
                 $scope.refresh();
                 $scope.item = undefined;
-            })
+            });
     };
 }]);
