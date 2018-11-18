@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingWeb", "VotingWeb\Voti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingData", "VotingData\VotingData.csproj", "{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka", "Kafka\Kafka.csproj", "{CD7BAAA4-4147-4DB2-90EF-6543B324E819}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,22 @@ Global
 		{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}.Release|x64.Build.0 = Release|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Debug|x64.Build.0 = Debug|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Release|x64.ActiveCfg = Release|Any CPU
+		{CD7BAAA4-4147-4DB2-90EF-6543B324E819}.Release|x64.Build.0 = Release|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Debug|x64.Build.0 = Debug|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Release|x64.ActiveCfg = Release|Any CPU
+		{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
