@@ -148,7 +148,7 @@
         {
             string serverAddresses = string.Join(",", consumerProperties.ServerAddresses);
 
-            var configuration = new Dictionary<string, object>()
+            var configuration = new Dictionary<string, object>
             {
                 [ConsumerGroupId] = consumerProperties.ConsumerGroupId,
                 [ServerAddresses] = serverAddresses

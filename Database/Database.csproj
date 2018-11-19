@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac.ServiceFabric" Version="2.1.0" />
     <PackageReference Include="Microsoft.ServiceFabric.Data.Extensions" Version="1.4.187" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.2.187" />
   </ItemGroup>
