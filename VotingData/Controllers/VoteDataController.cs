@@ -75,5 +75,14 @@
                 return new NotFoundResult();
             }
         }
+
+        // POST api/VoteData/aadharNo
+        [HttpPost("{aadharNo}")]
+        public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
+        {
+            // Add code to produce it to kafka topic
+
+            return new OkResult();
+        }
     }
 }

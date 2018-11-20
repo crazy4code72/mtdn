@@ -31,4 +31,18 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.item = undefined;
             });
     };
+
+    $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
+        if (aadharNo.toString().length !== 12) {
+            alert("Invalid Aadhar No");
+            return;
+        }
+        $http.post('api/Votes/' + aadharNo, {
+                transformRequest: angular.identity,
+                headers: { 'Content-Type': undefined }
+            })
+            .then(function (data, status) {
+                $scope.item = undefined;
+            });
+    };
 }]);

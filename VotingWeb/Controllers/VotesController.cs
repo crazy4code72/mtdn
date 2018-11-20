@@ -125,5 +125,27 @@ namespace VotingWeb.Controllers
         {
             return Char.ToUpper(name.First()) - 'A';
         }
+
+        // POST: api/Votes/aadharNo
+        [HttpPost("{aadharNo}")]
+        public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
+        {
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            int partitionKey = aadharNo.Sum(c => (int) char.GetNumericValue(c));
+            string proxyUrl = $"{proxyAddress}/api/VoteData/{aadharNo}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+            StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}", Encoding.UTF8, "application/json");
+            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Content = await response.Content.ReadAsStringAsync()
+                };
+            }
+        }
     }
 }
