@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kafka\Kafka.csproj" />
+    <ProjectReference Include="..\Kafka\VotingKafka.csproj" />
   </ItemGroup>
 
 </Project>

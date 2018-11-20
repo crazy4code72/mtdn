@@ -5,6 +5,29 @@
     <Parameter Name="VotingData_PartitionCount" DefaultValue="1" />
     <Parameter Name="VotingData_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="VotingWeb_InstanceCount" DefaultValue="-1" />
+    <!--Database Properties-->
+    <Parameter Name="VotingDatabase_InstanceCount" DefaultValue="1" />
+    <Parameter Name="VotingDatabase_KafkaListenerTopicName" DefaultValue="Voting" />
+    <Parameter Name="VotingDatabase_KafkaListenerServerAddress" DefaultValue="127.0.0.1:9092" />
+    <Parameter Name="VotingDatabase_KafkaConsumerGroupId" DefaultValue="PerfDatabaseConsumerGroup-3" />
+    <Parameter Name="VotingDatabase_KafkaAutoCommitIntervalInMilliseconds" DefaultValue="5000" />
+    <Parameter Name="VotingDatabase_KafkaAutoOffsetReset" DefaultValue="latest" />
+    <Parameter Name="VotingDatabase_SampleBatchSize" DefaultValue="50" />
+    <Parameter Name="VotingDatabase_SampleWaitTimeInMinutes" DefaultValue="1" />
+    <Parameter Name="VotingDatabase_DatabaseConnectionString" DefaultValue="Data Source=localhost;Initial Catalog=AirwatchDev;User ID=AirWatchAdmin;Password=AirWatchAdmin;" />
+    <Parameter Name="VotingDatabase_KafkaMaxPartitionFetchBytes" DefaultValue="10485760" />
+    <Parameter Name="VotingDatabase_MaxNumberOfConcurrentMessageProcessors" DefaultValue="1" />
+    <Parameter Name="VotingDatabase_MessagePollIntervalInMilliseconds" DefaultValue="100" />
+    <Parameter Name="VotingDatabase_KafkaProducerServerAddress" DefaultValue="127.0.0.1:9092" />
+    <Parameter Name="VotingDatabase_KafkaProducerTopicName" DefaultValue="Voting" />
+    <Parameter Name="VotingDatabase_CertificateLocation" DefaultValue="C:\kafka-certs\10.84.132.42_cert.pem" />
+    <Parameter Name="VotingDatabase_KeyLocation" DefaultValue="C:\kafka-certs\10.84.132.42_server.key" />
+    <Parameter Name="VotingDatabase_SecurityProtocol" DefaultValue="ssl" />
+    <Parameter Name="VotingDatabase_KeyPassword" DefaultValue="awvmware331!" />
+    <Parameter Name="VotingDatabase_CertificateAuthorityLocation" DefaultValue="C:\kafka-certs\10.84.132.42_ca_cert.pem" />
+    <Parameter Name="VotingDatabase_CompressionType" DefaultValue="Lz4" />
+    <Parameter Name="VotingDatabase_LoggingPath" DefaultValue="c:\ApplicationLogs\" />
+    <Parameter Name="VotingDatabase_LoggingLevel" DefaultValue="Information" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 

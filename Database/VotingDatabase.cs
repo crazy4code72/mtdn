@@ -1,38 +1,44 @@
-﻿namespace Database
+﻿namespace VotingDatabase
 {
     using System.Collections.Generic;
     using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
+    using Database;
     using Kafka;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    public class DatabaseConsumer  : StatelessService
+    public class VotingDatabase  : StatelessService
     {
         /// <summary>
         /// The database consumer parameters.
         /// </summary>
-        private readonly DatabaseConsumerParameters databaseConsumerParameters;
+        private readonly VotingDatabaseParameters _votingDatabaseParameters;
 
         /// <summary>
         /// The kafka consumer.
         /// </summary>
         private readonly KafkaConsumer<string, string> kafkaConsumer;
 
+        public VotingDatabase(StatelessServiceContext context)
+            : base(context)
+        {
+        }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="DatabaseConsumer"/> class.
+        /// Initializes a new instance of the <see cref="VotingDatabase"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="databaseConsumerParameters">The database consumer parameters.</param>
+        /// <param name="votingDatabaseParameters">The database consumer parameters.</param>
         /// <param name="kafkaConsumer">The kafka consumer.</param>
-        public DatabaseConsumer(
+        public VotingDatabase(
                 StatelessServiceContext context,
-                DatabaseConsumerParameters databaseConsumerParameters,
+                VotingDatabaseParameters votingDatabaseParameters,
                 KafkaConsumer<string, string> kafkaConsumer)
             : base(context)
         {
-            this.databaseConsumerParameters = databaseConsumerParameters;
+            this._votingDatabaseParameters = votingDatabaseParameters;
             this.kafkaConsumer = kafkaConsumer;
         }
 
@@ -54,6 +60,10 @@
         /// <returns>The <see cref="Task"/>.</returns>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            while (true)
+            {
+
+            }
         }
     }
 }

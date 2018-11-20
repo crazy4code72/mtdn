@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingWeb", "VotingWeb\Voti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingData", "VotingData\VotingData.csproj", "{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka", "Kafka\Kafka.csproj", "{CD7BAAA4-4147-4DB2-90EF-6543B324E819}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingKafka", "Kafka\VotingKafka.csproj", "{CD7BAAA4-4147-4DB2-90EF-6543B324E819}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingDatabase", "Database\VotingDatabase.csproj", "{1C2955D4-F461-4C2F-9EC4-23CE11E0DFA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

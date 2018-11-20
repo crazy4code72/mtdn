@@ -6,7 +6,7 @@
     using System.Fabric;
     using System.Diagnostics;
 
-    public class DatabaseConsumerParameters
+    public class VotingDatabaseParameters
     {
         /// <summary>
         /// Default sample batch size (50)
@@ -194,7 +194,7 @@
         /// </summary>
         /// <param name="activationContext">The activation Context.</param>
         /// <returns>Application Parameters</returns>
-        public static DatabaseConsumerParameters GetDatabaseConsumerParameters(ICodePackageActivationContext activationContext)
+        public static VotingDatabaseParameters GetDatabaseConsumerParameters(ICodePackageActivationContext activationContext)
         {
             var configurationPackage = activationContext.GetConfigurationPackageObject(ServiceFabricConfig);
             var consumerTopicName = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
@@ -324,7 +324,7 @@
                 isClientLoggingEnabled = DefaultIsClientLoggingEnabled;
             }
 
-            var result = new DatabaseConsumerParameters
+            var result = new VotingDatabaseParameters
             {
                 KafkaAutoCommitIntervalInMilliseconds = autoCommitInterval,
                 KafkaAutoOffsetReset = autoOffsetReset,
