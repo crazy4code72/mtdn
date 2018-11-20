@@ -76,8 +76,8 @@
             }
         }
 
-        // POST api/VoteData/aadharNo
-        [HttpPost("{aadharNo}")]
+        // POST api/VoteData/SubmitAadharNoToSendOtp/aadharNo
+        [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
             // Add code to produce it to kafka topic

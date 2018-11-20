@@ -37,7 +37,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             alert("Invalid Aadhar No");
             return;
         }
-        $http.post('api/Votes/' + aadharNo, {
+        $http.post('api/Votes/SubmitAadharNoToSendOtp/' + aadharNo, {
                 transformRequest: angular.identity,
                 headers: { 'Content-Type': undefined }
             })
