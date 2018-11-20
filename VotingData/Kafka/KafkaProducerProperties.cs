@@ -1,7 +1,7 @@
-﻿namespace VotingKafka
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace VotingData.Kafka
+{
     /// <summary>
     /// The kafka producer config.
     /// </summary>

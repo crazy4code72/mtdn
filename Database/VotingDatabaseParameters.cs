@@ -1,11 +1,12 @@
-﻿namespace Database
-{
-    using System.Linq;
-    using System;
-    using System.Collections.Generic;
-    using System.Fabric;
-    using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Fabric;
+using System.Linq;
+using VotingData.Kafka;
 
+namespace VotingDatabase
+{
     public class VotingDatabaseParameters
     {
         /// <summary>

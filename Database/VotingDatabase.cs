@@ -1,11 +1,11 @@
-﻿namespace VotingDatabase
+﻿using VotingData.Kafka;
+
+namespace VotingDatabase
 {
     using System.Collections.Generic;
     using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
-    using Database;
-    using Kafka;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 

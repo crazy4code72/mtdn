@@ -1,4 +1,12 @@
-﻿namespace VotingData.Controllers
+﻿using System;
+using System.Diagnostics;
+using System.Text;
+using Confluent.Kafka.Serialization;
+using Newtonsoft.Json;
+using VotingData.Kafka;
+using VotingData.Model;
+
+namespace VotingData.Controllers
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -81,6 +89,37 @@
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
             // Add code to produce it to kafka topic
+            var config = new KafkaProducerProperties
+            {
+                ServerAddresses = new List<string> { "127.0.0.1:9092" },
+                TopicName = "Voting",
+                CompressionType = KafkaProducerCompressionTypes.Snappy
+            };
+
+            using (KafkaProducer<string, string> producer = new KafkaProducer<string, string>(config, new StringSerializer(Encoding.UTF8), new StringSerializer(Encoding.UTF8)))
+            {
+                List<Task> tasks = new List<Task>();
+                try
+                {
+                    // Publish user details to Kafka
+                    var userDetails = new UserDetails
+                    {
+                        AadharNo = aadharNo
+                    };
+                    tasks.Add(producer.ProduceAsync(aadharNo, JsonConvert.SerializeObject(userDetails)));
+
+                    if (tasks.Count == 100)
+                    {
+                        await Task.WhenAll(tasks);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                await Task.WhenAll(tasks);
+            }
 
             return new OkResult();
         }

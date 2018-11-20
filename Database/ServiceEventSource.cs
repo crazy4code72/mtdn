@@ -1,10 +1,10 @@
-﻿namespace Database
-{
-    using System;
-    using System.Diagnostics.Tracing;
-    using System.Fabric;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics.Tracing;
+using System.Fabric;
+using System.Threading.Tasks;
 
+namespace VotingDatabase
+{
     [EventSource(Name = "MyCompany-Voting-VotingData")]
     internal sealed class ServiceEventSource : EventSource
     {

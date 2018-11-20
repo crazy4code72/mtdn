@@ -1,4 +1,4 @@
-﻿namespace VotingKafka
+﻿namespace VotingData.Kafka
 {
     public enum KafkaProducerCompressionTypes
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Confluent.Kafka;
 using Confluent.Kafka.Serialization;
 
-namespace VotingKafka
+namespace VotingData.Kafka
 {
     /// <summary>
     /// The kafka consumer.

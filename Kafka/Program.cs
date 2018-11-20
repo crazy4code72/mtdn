@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kafka
+namespace VotingKafka
 {
     class Program
     {

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace VotingKafka
+﻿namespace VotingData.Kafka
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The kafka consumer properties.
     /// </summary>
