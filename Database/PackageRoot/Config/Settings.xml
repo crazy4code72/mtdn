@@ -1,9 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <!-- Add your custom configuration sections and parameters here -->
-  <!--
-  <Section Name="MyConfigSection">
-    <Parameter Name="MyParameter" Value="Value1" />
+  <Section Name="DatabaseConsumerConfigSection">
+    <Parameter Name="UseSecureKafka" Value="false"/>
+    <Parameter Name="KafkaListenerTopicName" Value="Voting" />
+    <Parameter Name="KafkaListenerServerAddress" Value="127.0.0.1:9092"/>
+    <Parameter Name="KafkaConsumerGroupId" Value="DatabaseConsumerGroup"/>
+    <Parameter Name="KafkaAutoCommitIntervalInMilliseconds" Value="5000"/>
+    <Parameter Name="KafkaAutoOffsetReset" Value="latest"/>
+    <Parameter Name="SampleBatchSize" Value="50"/>
+    <Parameter Name="SampleWaitTimeInMinutes" Value="2"/>
+    <Parameter Name="KafkaMaxPartitionFetchBytes" Value="10485760"/>
+    <Parameter Name="DatabaseConnectionString" IsEncrypted="false" Value="Data Source=localhost;Initial Catalog=AirwatchDev;User ID=AirWatchAdmin;Password=AirWatchAdmin;"/>
+    <Parameter Name="MaxNumberOfConcurrentMessageProcessors" Value="1"/>
+    <Parameter Name="MessagePollIntervalInMilliseconds" Value="100"/>
+    <Parameter Name="KafkaProducerServerAddress" Value="127.0.0.1:9092"/>
+    <Parameter Name="KafkaProducerTopicName" Value="Voting"/>
+    <Parameter Name="CertificateLocation" Value="C:\kafka-certs\10.84.132.42_cert.pem"/>
+    <Parameter Name="KeyLocation" Value="C:\kafka-certs\10.84.132.42_server.key"/>
+    <Parameter Name="SecurityProtocol" Value="ssl"/>
+    <Parameter Name="KeyPassword" IsEncrypted="false" Value="awvmware331!"/>
+    <Parameter Name="CertificateAuthorityLocation" Value="C:\kafka-certs\10.84.132.42_ca_cert.pem"/>
+    <Parameter Name="CompressionType" Value="Lz4" />
+    <Parameter Name="LoggingPath" Value="c:\VotingLogs\"/>
+    <Parameter Name="EnvironmentName" Value="CN1000"/>
+    <Parameter Name="LoggingLevel" Value ="Information"/>
+    <Parameter Name="LogFileRollSize" Value="20480"/>
+    <Parameter Name="IsKafkaClientLoggingEnabled" Value="false" />
+    <Parameter Name="KafkaClientLoggingLevel" Value="all" />
   </Section>
-  -->
 </Settings>

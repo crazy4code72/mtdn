@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace VotingDatabase
 {
-    [EventSource(Name = "MyCompany-Voting-VotingData")]
+    [EventSource(Name = "MyCompany-Voting-VotingDatabase")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();
@@ -18,9 +18,7 @@ namespace VotingDatabase
         }
 
         // Instance constructor is private to enforce singleton semantics
-        private ServiceEventSource() : base()
-        {
-        }
+        private ServiceEventSource() : base() { }
 
         #region Keywords
 

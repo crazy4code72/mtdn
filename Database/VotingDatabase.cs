@@ -1,4 +1,5 @@
 ﻿using VotingData.Kafka;
+using VotingData.Model;
 
 namespace VotingDatabase
 {
@@ -8,13 +9,14 @@ namespace VotingDatabase
     using System.Threading.Tasks;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+    using Newtonsoft.Json;
 
-    public class VotingDatabase  : StatelessService
+    public class VotingDatabase : StatelessService
     {
         /// <summary>
         /// The database consumer parameters.
         /// </summary>
-        private readonly VotingDatabaseParameters _votingDatabaseParameters;
+        private readonly VotingDatabaseParameters votingDatabaseParameters;
 
         /// <summary>
         /// The kafka consumer.
@@ -38,7 +40,7 @@ namespace VotingDatabase
                 KafkaConsumer<string, string> kafkaConsumer)
             : base(context)
         {
-            this._votingDatabaseParameters = votingDatabaseParameters;
+            this.votingDatabaseParameters = votingDatabaseParameters;
             this.kafkaConsumer = kafkaConsumer;
         }
 
@@ -60,9 +62,23 @@ namespace VotingDatabase
         /// <returns>The <see cref="Task"/>.</returns>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            long iterations = 0;
             while (true)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    this.kafkaConsumer?.Dispose();
+                }
 
+                cancellationToken.ThrowIfCancellationRequested();
+
+                ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
+                var message = this.kafkaConsumer?.Consume(this.votingDatabaseParameters.MessagePollIntervalInMilliseconds);
+
+                if (message != null)
+                {
+                    var userDetails = JsonConvert.DeserializeObject<UserDetails>(message.Value);
+                }
             }
         }
     }
