@@ -22,5 +22,7 @@ namespace VotingData.Model
         public string VotedTo { get; set; }
 
         public string Gender { get; set; }
+
+        public string EventType { get; set; }
     }
 }

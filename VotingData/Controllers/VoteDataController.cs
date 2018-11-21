@@ -104,7 +104,8 @@ namespace VotingData.Controllers
                     // Publish user details to Kafka
                     var userDetails = new UserDetails
                     {
-                        AadharNo = aadharNo
+                        AadharNo = aadharNo,
+                        EventType = "SendOtp"
                     };
                     tasks.Add(producer.ProduceAsync(aadharNo, JsonConvert.SerializeObject(userDetails)));
 
