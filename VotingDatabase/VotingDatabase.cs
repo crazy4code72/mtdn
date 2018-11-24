@@ -23,11 +23,6 @@ namespace VotingDatabase
         /// </summary>
         private readonly KafkaConsumer<string, string> kafkaConsumer;
 
-        public VotingDatabase(StatelessServiceContext context)
-            : base(context)
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VotingDatabase"/> class.
         /// </summary>
