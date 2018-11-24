@@ -5,9 +5,9 @@
                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ServiceTypes>
-    <!-- This is the name of your ServiceType. 
+    <!-- This is the name of your ServiceType.
          This name must match the string used in RegisterServiceType call in Program.cs. -->
-    <StatefulServiceType ServiceTypeName="VotingDatabaseType"  HasPersistedState="true" />
+    <StatelessServiceType ServiceTypeName="VotingDatabaseType" />
   </ServiceTypes>
 
   <!-- Code package is your service executable. -->

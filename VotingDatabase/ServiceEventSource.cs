@@ -27,8 +27,8 @@ namespace VotingDatabase
         // Keywords must be defined as a public class named 'Keywords' inside EventSource that uses them.
         public static class Keywords
         {
-            public const EventKeywords Requests = (EventKeywords) 0x1L;
-            public const EventKeywords ServiceInitialization = (EventKeywords) 0x2L;
+            public const EventKeywords Requests = (EventKeywords)0x1L;
+            public const EventKeywords ServiceInitialization = (EventKeywords)0x2L;
         }
 
         #endregion

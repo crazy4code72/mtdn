@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\VotingData\VotingData.csproj" />
     <ProjectReference Include="..\VotingWeb\VotingWeb.csproj" />
+    <ProjectReference Include="..\VotingDatabase\VotingDatabase.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

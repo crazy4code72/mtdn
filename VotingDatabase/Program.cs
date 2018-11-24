@@ -27,11 +27,11 @@ namespace VotingDatabase
                 builder.RegisterServiceFabricSupport();
 
                 // Register a stateless service.
-                builder.RegisterStatelessService<VotingDatabase>("VotingDatabase");
+                builder.RegisterStatelessService<VotingDatabase>("VotingDatabaseType");
 
                 using (builder.Build())
                 {
-                    ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
+                    //ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
                     ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(VotingDatabase).Name);
 
                     // Prevents this host process from terminating so services keep running.
