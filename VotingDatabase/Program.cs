@@ -1,4 +1,6 @@
-﻿using VotingData.Kafka;
+﻿using System.Text;
+using Confluent.Kafka.Serialization;
+using VotingData.Kafka;
 
 namespace VotingDatabase
 {
@@ -22,6 +24,7 @@ namespace VotingDatabase
                 var databaseParams = VotingDatabaseParameters.GetDatabaseConsumerParameters(FabricRuntime.GetActivationContext());
                 builder.Register(c => databaseParams).As<VotingDatabaseParameters>().SingleInstance();
                 builder.Register(c => GetKafkaProducerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaProducerProperties>().SingleInstance();
+                builder.Register(c => SetupKafkaProducer(c.Resolve<VotingDatabaseParameters>())).As<KafkaProducer<string, string>>().SingleInstance();
 
                 // Register the Autofac for Service Fabric support.
                 builder.RegisterServiceFabricSupport();
@@ -59,6 +62,21 @@ namespace VotingDatabase
                 CertificateAuthorityLocation = votingDatabaseParameters.CertificateAuthorityLocation,
                 CompressionType = KafkaProducerCompressionTypes.Snappy
             };
+        }
+
+        /// <summary>
+        /// The setup kafka producer.
+        /// </summary>
+        /// <param name="databaseConsumerParameters">The database consumer parameters.</param>
+        /// <returns>The <see cref="KafkaProducer{T1,T2}"/>.</returns>
+        private static KafkaProducer<string, string> SetupKafkaProducer(VotingDatabaseParameters databaseConsumerParameters)
+        {
+            var kafkaProducerProperties = GetKafkaProducerProperties(databaseConsumerParameters);
+
+            return new KafkaProducer<string, string>(
+                kafkaProducerProperties,
+                new StringSerializer(Encoding.UTF8),
+                new StringSerializer(Encoding.UTF8));
         }
     }
 }
