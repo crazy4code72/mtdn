@@ -23,8 +23,7 @@ namespace VotingDatabase
                 // Register any regular dependencies.
                 var databaseParams = VotingDatabaseParameters.GetDatabaseConsumerParameters(FabricRuntime.GetActivationContext());
                 builder.Register(c => databaseParams).As<VotingDatabaseParameters>().SingleInstance();
-                builder.Register(c => GetKafkaProducerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaProducerProperties>().SingleInstance();
-                builder.Register(c => SetupKafkaProducer(c.Resolve<VotingDatabaseParameters>())).As<KafkaProducer<string, string>>().SingleInstance();
+                builder.Register(c => SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>())).As<IKafkaConsumer<string, string>>().SingleInstance();
 
                 // Register the Autofac for Service Fabric support.
                 builder.RegisterServiceFabricSupport();
@@ -34,7 +33,7 @@ namespace VotingDatabase
 
                 using (builder.Build())
                 {
-                    //ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
+                    ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
                     ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(VotingDatabase).Name);
 
                     // Prevents this host process from terminating so services keep running.
@@ -48,35 +47,37 @@ namespace VotingDatabase
             }
         }
 
-        private static KafkaProducerProperties GetKafkaProducerProperties(VotingDatabaseParameters votingDatabaseParameters)
-        {
-            return new KafkaProducerProperties
-            {
-                ServerAddresses = votingDatabaseParameters.KafkaProducerServerAddress,
-                TopicName = votingDatabaseParameters.KafkaProducerTopicName,
-                UseSecureKafka = votingDatabaseParameters.UseSecureKafka,
-                SecurityProtocol = votingDatabaseParameters.SecurityProtocol,
-                CertificateLocation = votingDatabaseParameters.CertificateLocation,
-                KeyLocation = votingDatabaseParameters.KeyLocation,
-                KeyPassword = votingDatabaseParameters.KeyPassword,
-                CertificateAuthorityLocation = votingDatabaseParameters.CertificateAuthorityLocation,
-                CompressionType = KafkaProducerCompressionTypes.Snappy
-            };
-        }
-
         /// <summary>
-        /// The setup kafka producer.
+        /// The setup kafka consumer.
         /// </summary>
-        /// <param name="databaseConsumerParameters">The database consumer parameters.</param>
-        /// <returns>The <see cref="KafkaProducer{T1,T2}"/>.</returns>
-        private static KafkaProducer<string, string> SetupKafkaProducer(VotingDatabaseParameters databaseConsumerParameters)
+        /// <param name="databaseConsumerParameters">
+        /// The database consumer parameters.
+        /// </param>
+        /// <returns>
+        /// The <see cref="KafkaConsumer{T1,T2}"/>.
+        /// </returns>
+        private static IKafkaConsumer<string, string> SetupKafkaConsumer(VotingDatabaseParameters databaseConsumerParameters)
         {
-            var kafkaProducerProperties = GetKafkaProducerProperties(databaseConsumerParameters);
+            var kafkaConsumerProperties = new KafkaConsumerProperties
+            {
+                AutoCommitIntervalInMilliseconds = databaseConsumerParameters.KafkaAutoCommitIntervalInMilliseconds,
+                AutoOffsetReset = databaseConsumerParameters.KafkaAutoOffsetReset,
+                ServerAddresses = databaseConsumerParameters.KafkaListenerServerAddress,
+                TopicName = databaseConsumerParameters.KafkaListenerTopicName,
+                ConsumerGroupId = databaseConsumerParameters.KafkaConsumerGroupId,
+                MaximumParititionFetchBytes = databaseConsumerParameters.KafkaMaxPartitionFetchBytes,
+                UseSecureKafka = databaseConsumerParameters.UseSecureKafka,
+                SecurityProtocol = databaseConsumerParameters.SecurityProtocol,
+                CertificateLocation = databaseConsumerParameters.CertificateLocation,
+                KeyLocation = databaseConsumerParameters.KeyLocation,
+                KeyPassword = databaseConsumerParameters.KeyPassword,
+                CertificateAuthorityLocation = databaseConsumerParameters.CertificateAuthorityLocation,
+            };
 
-            return new KafkaProducer<string, string>(
-                kafkaProducerProperties,
-                new StringSerializer(Encoding.UTF8),
-                new StringSerializer(Encoding.UTF8));
+            return new KafkaConsumer<string, string>(
+                kafkaConsumerProperties,
+                new StringDeserializer(Encoding.UTF8),
+                new StringDeserializer(Encoding.UTF8));
         }
     }
 }

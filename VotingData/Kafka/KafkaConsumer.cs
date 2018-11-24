@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Confluent.Kafka;
 using Confluent.Kafka.Serialization;
 
@@ -10,7 +11,7 @@ namespace VotingData.Kafka
     /// </summary>
     /// <typeparam name="T1">key</typeparam>
     /// <typeparam name="T2">value</typeparam>
-    public class KafkaConsumer<T1, T2>
+    public class KafkaConsumer<T1, T2> : IKafkaConsumer<T1, T2>
     {
         /// <summary>
         /// The consumer group id.
@@ -184,6 +185,17 @@ namespace VotingData.Kafka
             }
 
             return configuration;
+        }
+
+        /// <summary>
+        /// The commit async.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public Task CommitAsync()
+        {
+            return this.consumer.CommitAsync();
         }
     }
 }

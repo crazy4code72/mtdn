@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace VotingData.Kafka
+﻿namespace VotingData.Kafka
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +18,7 @@ namespace VotingData.Kafka
     /// <typeparam name="T2">
     /// value dataType
     /// </typeparam>
-    public class KafkaProducer<T1, T2> : IDisposable
+    public class KafkaProducer<T1, T2> : IKafkaProducer<T1, T2>
     {
         /// <summary>
         /// Server address

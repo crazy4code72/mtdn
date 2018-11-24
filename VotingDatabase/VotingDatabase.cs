@@ -1,8 +1,7 @@
-﻿using VotingData.Kafka;
-using VotingData.Model;
-
-namespace VotingDatabase
+﻿namespace VotingDatabase
 {
+    using VotingData.Kafka;
+    using VotingData.Model;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Threading;
@@ -21,7 +20,9 @@ namespace VotingDatabase
         /// <summary>
         /// The kafka consumer.
         /// </summary>
-        private readonly KafkaConsumer<string, string> kafkaConsumer;
+        private readonly IKafkaConsumer<string, string> kafkaConsumer;
+
+        public VotingDatabase(StatelessServiceContext context): base(context) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VotingDatabase"/> class.
@@ -32,7 +33,7 @@ namespace VotingDatabase
         public VotingDatabase(
                 StatelessServiceContext context,
                 VotingDatabaseParameters votingDatabaseParameters,
-                KafkaConsumer<string, string> kafkaConsumer)
+                IKafkaConsumer<string, string> kafkaConsumer)
             : base(context)
         {
             this.votingDatabaseParameters = votingDatabaseParameters;
