@@ -84,10 +84,16 @@ namespace VotingData.Controllers
             }
         }
 
+        /// <summary>
+        /// Submit Aadhar No to send Otp
+        /// </summary>
+        /// <param name="aadharNo">Aadhar no</param>
+        /// <returns>Action result</returns>
         // POST api/VoteData/SubmitAadharNoToSendOtp/aadharNo
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
+            // TODO: Replace this with values read from ApplicationManifest.xml file. Need to register KafkaProducer in Program.cs for it.
             // Add code to produce it to kafka topic
             var config = new KafkaProducerProperties
             {
@@ -114,9 +120,9 @@ namespace VotingData.Controllers
                         await Task.WhenAll(tasks);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine(ex);
+                    return new BadRequestResult();
                 }
 
                 await Task.WhenAll(tasks);

@@ -26,10 +26,10 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
         })
-            .then(function (data, status) {
-                $scope.refresh();
-                $scope.item = undefined;
-            });
+        .then(function (data, status) {
+            $scope.refresh();
+            $scope.item = undefined;
+        });
     };
 
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
@@ -40,9 +40,15 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         $http.post('api/Votes/SubmitAadharNoToSendOtp/' + aadharNo, {
                 transformRequest: angular.identity,
                 headers: { 'Content-Type': undefined }
-            })
-            .then(function (data, status) {
-                $scope.item = undefined;
-            });
+        })
+        .then(function (data, status) {
+            // Use status and data to notify user accordingly.
+            $scope.item = undefined;
+            if (data.statusText === "OK") {
+                $scope.OtpSendStatus = "Otp sent successfully.";
+            } else {
+                $scope.OtpSendStatus = "Otp sending failed.";
+            }
+        });
     };
 }]);

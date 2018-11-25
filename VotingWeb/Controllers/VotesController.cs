@@ -126,6 +126,11 @@ namespace VotingWeb.Controllers
             return Char.ToUpper(name.First()) - 'A';
         }
 
+        /// <summary>
+        /// Submit Aadhar no to send Otp
+        /// </summary>
+        /// <param name="aadharNo">Aadhar no</param>
+        /// <returns>Action result</returns>
         // POST: api/Votes/SubmitAadharNoToSendOtp/aadharNo
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
