@@ -23,6 +23,8 @@ namespace VotingDatabase
                 // Register any regular dependencies.
                 var databaseParams = VotingDatabaseParameters.GetDatabaseConsumerParameters(FabricRuntime.GetActivationContext());
                 builder.Register(c => databaseParams).As<VotingDatabaseParameters>().SingleInstance();
+                builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>();
+                builder.Register(c => GetKafkaConsumerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaConsumerProperties>().SingleInstance();
                 builder.Register(c => SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>())).As<IKafkaConsumer<string, string>>().SingleInstance();
 
                 // Register the Autofac for Service Fabric support.
@@ -33,7 +35,10 @@ namespace VotingDatabase
 
                 using (builder.Build())
                 {
-                    ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
+//                    builder.Register(c => ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context =>
+//                        new VotingDatabase(context, c.Resolve<VotingDatabaseParameters>(),
+//                            SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>()))));
+//                    ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
                     ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(VotingDatabase).Name);
 
                     // Prevents this host process from terminating so services keep running.
@@ -58,6 +63,16 @@ namespace VotingDatabase
         /// </returns>
         private static IKafkaConsumer<string, string> SetupKafkaConsumer(VotingDatabaseParameters databaseConsumerParameters)
         {
+            var kafkaConsumerProperties = GetKafkaConsumerProperties(databaseConsumerParameters);
+
+            return new KafkaConsumer<string, string>(
+                kafkaConsumerProperties,
+                new StringDeserializer(Encoding.UTF8),
+                new StringDeserializer(Encoding.UTF8));
+        }
+
+        private static KafkaConsumerProperties GetKafkaConsumerProperties(VotingDatabaseParameters databaseConsumerParameters)
+        {
             var kafkaConsumerProperties = new KafkaConsumerProperties
             {
                 AutoCommitIntervalInMilliseconds = databaseConsumerParameters.KafkaAutoCommitIntervalInMilliseconds,
@@ -73,11 +88,7 @@ namespace VotingDatabase
                 KeyPassword = databaseConsumerParameters.KeyPassword,
                 CertificateAuthorityLocation = databaseConsumerParameters.CertificateAuthorityLocation,
             };
-
-            return new KafkaConsumer<string, string>(
-                kafkaConsumerProperties,
-                new StringDeserializer(Encoding.UTF8),
-                new StringDeserializer(Encoding.UTF8));
+            return kafkaConsumerProperties;
         }
     }
 }
