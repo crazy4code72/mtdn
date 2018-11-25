@@ -1,16 +1,14 @@
-﻿using System.Text;
-using Confluent.Kafka.Serialization;
-using VotingData.Kafka;
-
-namespace VotingDatabase
+﻿namespace VotingDatabase
 {
+    using System.Text;
+    using Confluent.Kafka.Serialization;
+    using VotingData.Kafka;
     using System;
     using System.Fabric;
     using System.Threading;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
     using System.Diagnostics;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     public class Program
     {
@@ -35,10 +33,6 @@ namespace VotingDatabase
 
                 using (builder.Build())
                 {
-//                    builder.Register(c => ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context =>
-//                        new VotingDatabase(context, c.Resolve<VotingDatabaseParameters>(),
-//                            SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>()))));
-//                    ServiceRuntime.RegisterServiceAsync("VotingDatabaseType", context => new VotingDatabase(context)).GetAwaiter().GetResult();
                     ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(VotingDatabase).Name);
 
                     // Prevents this host process from terminating so services keep running.

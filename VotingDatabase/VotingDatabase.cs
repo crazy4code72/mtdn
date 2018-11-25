@@ -22,8 +22,6 @@
         /// </summary>
         private readonly IKafkaConsumer<string, string> kafkaConsumer;
 
-        public VotingDatabase(StatelessServiceContext context): base(context) { }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VotingDatabase"/> class.
         /// </summary>
@@ -58,7 +56,6 @@
         /// <returns>The <see cref="Task"/>.</returns>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            long iterations = 0;
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -68,7 +65,6 @@
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
                 var message = this.kafkaConsumer?.Consume(this.votingDatabaseParameters.MessagePollIntervalInMilliseconds);
 
                 if (message != null)
