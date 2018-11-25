@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingWeb", "VotingWeb\Voti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingData", "VotingData\VotingData.csproj", "{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingDatabase", "VotingDatabase\VotingDatabase.csproj", "{7CB359CB-9224-4947-8093-A6706223648C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingDatabase", "VotingDatabase\VotingDatabase.csproj", "{7CB359CB-9224-4947-8093-A6706223648C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +46,7 @@ Global
 		{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{AB9919D6-7D15-4FE7-89C6-3F6356FD4FF7}.Release|x64.Build.0 = Release|Any CPU
 		{7CB359CB-9224-4947-8093-A6706223648C}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{7CB359CB-9224-4947-8093-A6706223648C}.Debug|Any CPU.Build.0 = Debug|x64
 		{7CB359CB-9224-4947-8093-A6706223648C}.Debug|x64.ActiveCfg = Debug|x64
 		{7CB359CB-9224-4947-8093-A6706223648C}.Debug|x64.Build.0 = Debug|x64
 		{7CB359CB-9224-4947-8093-A6706223648C}.Release|Any CPU.ActiveCfg = Release|x64
