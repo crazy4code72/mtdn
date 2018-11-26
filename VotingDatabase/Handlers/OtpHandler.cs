@@ -7,7 +7,7 @@
     /// <summary>
     /// Send otp handler class.
     /// </summary>
-    internal class SendOtpHandler
+    internal class OtpHandler : IDataHandler
     {
         /// <summary>
         /// Voting database parameters.
@@ -18,7 +18,7 @@
         /// Constructor.
         /// </summary>
         /// <param name="votingDatabaseParameters">Voting database parameters</param>
-        public SendOtpHandler(VotingDatabaseParameters votingDatabaseParameters)
+        public OtpHandler(VotingDatabaseParameters votingDatabaseParameters)
         {
             this.votingDatabaseParameters = votingDatabaseParameters;
         }
@@ -77,6 +77,5 @@
         {
             // Send otp to email id.
         }
-
     }
 }

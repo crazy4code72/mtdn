@@ -10,6 +10,7 @@
     using Autofac.Integration.ServiceFabric;
     using System.Diagnostics;
     using global::VotingDatabase.Handlers;
+    using VotingData.Model;
 
     public class Program
     {
@@ -22,10 +23,17 @@
                 // Register any regular dependencies.
                 var databaseParams = VotingDatabaseParameters.GetDatabaseConsumerParameters(FabricRuntime.GetActivationContext());
                 builder.Register(c => databaseParams).As<VotingDatabaseParameters>().SingleInstance();
-                builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>();
-                builder.RegisterType<VotingDatabaseMessageHandler>().As<IVotingDatabaseMessageHandler>();
+                builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>().SingleInstance();
+                builder.RegisterType<VotingDatabaseMessageHandler>().As<IVotingDatabaseMessageHandler>().SingleInstance();
+                builder.RegisterType<OtpHandler>().As<IDataHandler>().Keyed<IDataHandler>(Enums.EventType.SendOtp);
                 builder.Register(c => GetKafkaConsumerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaConsumerProperties>().SingleInstance();
                 builder.Register(c => SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>())).As<IKafkaConsumer<string, string>>().SingleInstance();
+
+                builder.Register<Func<Enums.EventType, IDataHandler>>(c =>
+                {
+                    var componentContext = c.Resolve<IComponentContext>();
+                    return eventType => componentContext.ResolveKeyed<IDataHandler>(eventType);
+                });
 
                 // Register the Autofac for Service Fabric support.
                 builder.RegisterServiceFabricSupport();

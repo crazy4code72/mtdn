@@ -26,5 +26,7 @@
         public string ContactNo { get; set; }
 
         public string EmailId { get; set; }
+
+        public int Otp { get; set; }
     }
 }

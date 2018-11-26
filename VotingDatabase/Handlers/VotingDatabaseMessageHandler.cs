@@ -10,32 +10,29 @@
     internal class VotingDatabaseMessageHandler : IVotingDatabaseMessageHandler
     {
         /// <summary>
-        /// The database consumer parameters.
+        /// Handler Factory
         /// </summary>
-        private readonly VotingDatabaseParameters votingDatabaseParameters;
+        private readonly Func<Enums.EventType, IDataHandler> handlerFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VotingDatabaseMessageHandler"/> class.
         /// </summary>
-        public VotingDatabaseMessageHandler(VotingDatabaseParameters votingDatabaseParameters)
+        public VotingDatabaseMessageHandler(Func<Enums.EventType, IDataHandler> handlerFactory)
         {
-            this.votingDatabaseParameters = votingDatabaseParameters;
+            this.handlerFactory = handlerFactory;
         }
 
         /// <summary>
-        /// Handler incoming messages.
+        /// Handle incoming messages.
         /// </summary>
         /// <param name="userDetails">User details.</param>
         /// <returns>Task</returns>
         public async Task HandleMessage(UserDetails userDetails)
         {
+            IDataHandler handler = handlerFactory(userDetails.EventType);
             switch (userDetails.EventType)
             {
-                case Enums.EventType.SendOtp:
-                    // TODO: Use factory for this.
-                    var sendOtpHandler = new SendOtpHandler(this.votingDatabaseParameters);
-                    await sendOtpHandler.GetContactDetailsAndSendOtpForAadharNo(userDetails.AadharNo);
-                    break;
+                case Enums.EventType.SendOtp: await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails.AadharNo); break;
                 default: throw new ArgumentOutOfRangeException();
             }
         }
