@@ -111,7 +111,7 @@ namespace VotingData.Controllers
                     var userDetails = new UserDetails
                     {
                         AadharNo = aadharNo,
-                        EventType = "SendOtp"
+                        EventType = Enums.EventType.SendOtp
                     };
                     tasks.Add(producer.ProduceAsync(aadharNo, JsonConvert.SerializeObject(userDetails)));
 

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace VotingData.Model
+﻿namespace VotingData.Model
 {
+    /// <summary>
+    /// User details.
+    /// </summary>
     public class UserDetails
     {
         public string AadharNo { get; set; }
@@ -21,8 +19,12 @@ namespace VotingData.Model
 
         public string VotedTo { get; set; }
 
-        public string Gender { get; set; }
+        public Enums.Gender Gender { get; set; }
 
-        public string EventType { get; set; }
+        public Enums.EventType EventType { get; set; }
+
+        public string ContactNo { get; set; }
+
+        public string EmailId { get; set; }
     }
 }

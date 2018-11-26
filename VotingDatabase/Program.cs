@@ -9,6 +9,7 @@
     using Autofac;
     using Autofac.Integration.ServiceFabric;
     using System.Diagnostics;
+    using global::VotingDatabase.Handlers;
 
     public class Program
     {
@@ -22,6 +23,7 @@
                 var databaseParams = VotingDatabaseParameters.GetDatabaseConsumerParameters(FabricRuntime.GetActivationContext());
                 builder.Register(c => databaseParams).As<VotingDatabaseParameters>().SingleInstance();
                 builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>();
+                builder.RegisterType<VotingDatabaseMessageHandler>().As<IVotingDatabaseMessageHandler>();
                 builder.Register(c => GetKafkaConsumerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaConsumerProperties>().SingleInstance();
                 builder.Register(c => SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>())).As<IKafkaConsumer<string, string>>().SingleInstance();
 

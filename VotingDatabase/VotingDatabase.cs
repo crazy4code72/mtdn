@@ -1,5 +1,7 @@
 ﻿namespace VotingDatabase
 {
+    using System;
+    using global::VotingDatabase.Handlers;
     using VotingData.Kafka;
     using VotingData.Model;
     using System.Collections.Generic;
@@ -23,19 +25,27 @@
         private readonly IKafkaConsumer<string, string> kafkaConsumer;
 
         /// <summary>
+        /// Voting database message handler.
+        /// </summary>
+        private readonly IVotingDatabaseMessageHandler votingDatabaseMessageHandler;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="VotingDatabase"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="votingDatabaseMessageHandler">Voting database message handler.</param>
         /// <param name="votingDatabaseParameters">The database consumer parameters.</param>
         /// <param name="kafkaConsumer">The kafka consumer.</param>
         public VotingDatabase(
                 StatelessServiceContext context,
+                IVotingDatabaseMessageHandler votingDatabaseMessageHandler,
                 VotingDatabaseParameters votingDatabaseParameters,
                 IKafkaConsumer<string, string> kafkaConsumer)
             : base(context)
         {
             this.votingDatabaseParameters = votingDatabaseParameters;
             this.kafkaConsumer = kafkaConsumer;
+            this.votingDatabaseMessageHandler = votingDatabaseMessageHandler;
         }
 
         /// <summary>
@@ -65,11 +75,19 @@
 
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // TODO: Put a throttle here on number of requests.
                 var message = this.kafkaConsumer?.Consume(this.votingDatabaseParameters.MessagePollIntervalInMilliseconds);
 
-                if (message != null)
+                if (message == null) continue;
+                try
                 {
                     var userDetails = JsonConvert.DeserializeObject<UserDetails>(message.Value);
+                    await this.votingDatabaseMessageHandler.HandleMessage(userDetails);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
             }
         }
