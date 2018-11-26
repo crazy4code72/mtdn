@@ -33,6 +33,7 @@
             switch (userDetails.EventType)
             {
                 case Enums.EventType.SendOtp: await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails.AadharNo); break;
+                case Enums.EventType.VerifyOtp: break;
                 default: throw new ArgumentOutOfRangeException();
             }
         }

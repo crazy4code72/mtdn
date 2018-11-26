@@ -4,7 +4,8 @@
     {
         public enum EventType
         {
-            SendOtp = 1
+            SendOtp = 1,
+            VerifyOtp = 2
         }
 
         public enum Gender

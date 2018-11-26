@@ -26,6 +26,7 @@
                 builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>().SingleInstance();
                 builder.RegisterType<VotingDatabaseMessageHandler>().As<IVotingDatabaseMessageHandler>().SingleInstance();
                 builder.RegisterType<OtpHandler>().As<IDataHandler>().Keyed<IDataHandler>(Enums.EventType.SendOtp);
+                builder.RegisterType<OtpHandler>().As<IDataHandler>().Keyed<IDataHandler>(Enums.EventType.VerifyOtp);
                 builder.Register(c => GetKafkaConsumerProperties(c.Resolve<VotingDatabaseParameters>())).As<KafkaConsumerProperties>().SingleInstance();
                 builder.Register(c => SetupKafkaConsumer(c.Resolve<VotingDatabaseParameters>())).As<IKafkaConsumer<string, string>>().SingleInstance();
 
