@@ -1,6 +1,9 @@
-﻿namespace VotingDatabase.Handlers
+﻿using System.Data;
+
+namespace VotingDatabase.Handlers
 {
     using System;
+    using System.Data.SqlClient;
     using System.Threading.Tasks;
     using VotingData.Model;
 
@@ -30,7 +33,7 @@
         public async Task GetContactDetailsAndSendOtpForAadharNo(string aadharNo)
         {
             var otp = new Random().Next(1000, 9999);
-            var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
+            var contactDetails = await UpdateOtpAndGetContactDetails(aadharNo, otp);
 
             var otpMessageForUser = string.Format("{0} is OTP for Matdaan. It will be invalid after 10 minutes.", otp);
 
@@ -51,11 +54,42 @@
         /// <param name="aadharNo">Aadhar no</param>
         /// <param name="otp">Otp</param>
         /// <returns></returns>
-        private UserDetails UpdateOtpAndGetContactDetails(string aadharNo, int otp)
+        private async Task<UserDetails> UpdateOtpAndGetContactDetails(string aadharNo, int otp)
         {
             // Make Db call, update the OTP for Aadhar No only if (aadhar no && contact no || email id), return the contact details.
             // SP called from here should also delete the OTP after 10 minutes.
-            return new UserDetails();
+            UserDetails userDetails = new UserDetails();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.votingDatabaseParameters.DatabaseConnectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sqlCommand = new SqlCommand("UpdateOtpAndGetContactDetails", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    // Add parameters
+                    sqlCommand.Parameters.Add(new SqlParameter("@AADHAR_NO", aadharNo));
+                    sqlCommand.Parameters.Add(new SqlParameter("@OTP", otp));
+
+                    using (var reader = await sqlCommand.ExecuteReaderAsync())
+                    {
+                        while (reader.Read())
+                        {
+                            userDetails.ContactNo = (string)reader["CONTACT_NO"];
+                            userDetails.EmailId = (string)reader["EMAIL_ID"];
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return userDetails;
         }
 
         /// <summary>

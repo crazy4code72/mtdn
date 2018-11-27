@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.ServiceFabric.Data.Extensions" Version="1.4.187" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.2.187" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,9 +26,6 @@
   <ItemGroup>
     <Reference Include="Confluent.Kafka">
       <HintPath>..\..\..\..\..\..\.nuget\packages\confluent.kafka\0.11.6\lib\net46\Confluent.Kafka.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
 
