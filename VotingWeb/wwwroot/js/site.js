@@ -33,21 +33,24 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
     };
 
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
-        if (aadharNo.toString().length !== 12) {
+        if (aadharNo === undefined || aadharNo.toString().length !== 12) {
             alert("Invalid Aadhar No");
             return;
         }
         $http.post('api/Votes/SubmitAadharNoToSendOtp/' + aadharNo, {
-                transformRequest: angular.identity,
-                headers: { 'Content-Type': undefined }
+            transformRequest: angular.identity,
+            headers: { 'Content-Type': undefined }
         })
         .then(function (data, status) {
             // Use status and data to notify user accordingly.
             $scope.item = undefined;
+            document.getElementById("txtEnterOtpDiv").style.display = "block";
             if (data.statusText === "OK") {
-                $scope.OtpSendStatus = "Otp sent successfully.";
+                $scope.OtpSendingMessage = "OTP sent to registered mobile no and email id.";
+                $scope.OtpSendingStatus = "green";
             } else {
-                $scope.OtpSendStatus = "Otp sending failed.";
+                $scope.OtpSendingMessage = "OTP sending to registered mobile no and email id failed, please try again.";
+                $scope.OtpSendingStatus = "red";
             }
         });
     };
