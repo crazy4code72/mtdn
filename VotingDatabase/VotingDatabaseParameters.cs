@@ -170,11 +170,6 @@ namespace VotingDatabase
         public int LogFileRollSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the compression types.
-        /// </summary>
-        public KafkaProducerCompressionTypes CompressionType { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether environment name.
         /// </summary>
         public string EnvironmentName { get; set; }
@@ -293,14 +288,6 @@ namespace VotingDatabase
                 useSecureKafka = DefaultUseSecureKafka;
             }
 
-            string compressionType = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
-                .Parameters[nameof(CompressionType)].Value;
-
-            if (!Enum.TryParse(compressionType, true, out KafkaProducerCompressionTypes kafkaCompressionType))
-            {
-                kafkaCompressionType = KafkaProducerCompressionTypes.None;
-            }
-
             string loggingLevel = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
                 .Parameters[nameof(LoggingLevel)].Value;
 
@@ -346,7 +333,6 @@ namespace VotingDatabase
                 KeyPassword = keyPassword,
                 CertificateAuthorityLocation = certificateAuthorityLocation,
                 UseSecureKafka = useSecureKafka,
-                CompressionType = kafkaCompressionType,
                 EnvironmentName = environmentName,
                 LoggingPath = loggingPath,
                 LoggingLevel = sourceLevels,
