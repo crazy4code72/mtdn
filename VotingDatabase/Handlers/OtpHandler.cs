@@ -1,11 +1,10 @@
-﻿using System.Data;
-
-namespace VotingDatabase.Handlers
+﻿namespace VotingDatabase.Handlers
 {
     using System;
     using System.Data.SqlClient;
     using System.Threading.Tasks;
-    using VotingData.Model;
+    using System.Data;
+    using global::VotingDatabase.Model;
 
     /// <summary>
     /// Send otp handler class.
@@ -33,7 +32,7 @@ namespace VotingDatabase.Handlers
         public async Task GetContactDetailsAndSendOtpForAadharNo(string aadharNo)
         {
             var otp = new Random().Next(1000, 9999);
-            var contactDetails = await UpdateOtpAndGetContactDetails(aadharNo, otp);
+            var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
             var otpMessageForUser = string.Format("{0} is OTP for Matdaan. It will be invalid after 10 minutes.", otp);
 
@@ -54,7 +53,7 @@ namespace VotingDatabase.Handlers
         /// <param name="aadharNo">Aadhar no</param>
         /// <param name="otp">Otp</param>
         /// <returns></returns>
-        private async Task<UserDetails> UpdateOtpAndGetContactDetails(string aadharNo, int otp)
+        private UserDetails UpdateOtpAndGetContactDetails(string aadharNo, int otp)
         {
             // Make Db call, update the OTP for Aadhar No only if (aadhar no && contact no || email id), return the contact details.
             // SP called from here should also delete the OTP after 10 minutes.
@@ -63,7 +62,7 @@ namespace VotingDatabase.Handlers
             {
                 using (SqlConnection connection = new SqlConnection(this.votingDatabaseParameters.DatabaseConnectionString))
                 {
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var sqlCommand = new SqlCommand("UpdateOtpAndGetContactDetails", connection)
                     {
@@ -74,7 +73,7 @@ namespace VotingDatabase.Handlers
                     sqlCommand.Parameters.Add(new SqlParameter("@AADHAR_NO", aadharNo));
                     sqlCommand.Parameters.Add(new SqlParameter("@OTP", otp));
 
-                    using (var reader = await sqlCommand.ExecuteReaderAsync())
+                    using (var reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -83,11 +82,10 @@ namespace VotingDatabase.Handlers
                         }
                     }
                 }
-
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+                return userDetails;
             }
             return userDetails;
         }

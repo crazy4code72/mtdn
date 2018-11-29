@@ -1,9 +1,10 @@
-﻿namespace VotingDatabase
+﻿using VotingDatabase.Kafka;
+
+namespace VotingDatabase
 {
     using System;
     using global::VotingDatabase.Handlers;
-    using VotingData.Kafka;
-    using VotingData.Model;
+    using global::VotingDatabase.Model;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Threading;

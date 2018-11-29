@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using VotingData.Model;
+    using global::VotingDatabase.Model;
 
     /// <summary>
     /// Voting database message handler class.

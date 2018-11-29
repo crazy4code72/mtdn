@@ -1,8 +1,9 @@
-﻿namespace VotingDatabase
+﻿using VotingDatabase.Kafka;
+
+namespace VotingDatabase
 {
     using System.Text;
     using Confluent.Kafka.Serialization;
-    using VotingData.Kafka;
     using System;
     using System.Fabric;
     using System.Threading;
@@ -10,7 +11,7 @@
     using Autofac.Integration.ServiceFabric;
     using System.Diagnostics;
     using global::VotingDatabase.Handlers;
-    using VotingData.Model;
+    using global::VotingDatabase.Model;
 
     public class Program
     {

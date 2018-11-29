@@ -1,7 +1,7 @@
 ﻿namespace VotingDatabase.Handlers
 {
     using System.Threading.Tasks;
-    using VotingData.Model;
+    using global::VotingDatabase.Model;
 
     /// <summary>
     /// IVotingDatabaseMessageHandler interface.

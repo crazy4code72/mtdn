@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Fabric;
 using System.Linq;
-using VotingData.Kafka;
+using global::VotingDatabase.Kafka;
 
 namespace VotingDatabase
 {
