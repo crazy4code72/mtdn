@@ -1,10 +1,11 @@
 ﻿namespace VotingDatabase.Handlers
 {
+    using global::VotingDatabase.DataAccess;
+    using global::VotingDatabase.Model;
     using System;
+    using System.Data;
     using System.Data.SqlClient;
     using System.Threading.Tasks;
-    using System.Data;
-    using global::VotingDatabase.Model;
 
     /// <summary>
     /// Send otp handler class.
@@ -34,7 +35,7 @@
             var otp = new Random().Next(1000, 9999);
             var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
-            var otpMessageForUser = string.Format("{0} is OTP for Matdaan. It will be invalid after 10 minutes.", otp);
+            var otpMessageForUser = string.Concat(otp, " is OTP for Matdaan. It will be invalid after 10 minutes.");
 
             if (contactDetails.ContactNo != null)
             {
@@ -52,7 +53,7 @@
         /// </summary>
         /// <param name="aadharNo">Aadhar no</param>
         /// <param name="otp">Otp</param>
-        /// <returns></returns>
+        /// <returns>User details</returns>
         private UserDetails UpdateOtpAndGetContactDetails(string aadharNo, int otp)
         {
             // Make Db call, update the OTP for Aadhar No only if (aadhar no && contact no || email id), return the contact details.
@@ -64,21 +65,21 @@
                 {
                     connection.Open();
 
-                    var sqlCommand = new SqlCommand("UpdateOtpAndGetContactDetails", connection)
+                    var sqlCommand = new SqlCommand(DataAccess.UpdateOtpAndGetContactDetails, connection)
                     {
                         CommandType = CommandType.StoredProcedure
                     };
 
                     // Add parameters
-                    sqlCommand.Parameters.Add(new SqlParameter("@AADHAR_NO", aadharNo));
-                    sqlCommand.Parameters.Add(new SqlParameter("@OTP", otp));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.AadharNo_Input, aadharNo));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.Otp_Input, otp));
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            userDetails.ContactNo = (string)reader["CONTACT_NO"];
-                            userDetails.EmailId = (string)reader["EMAIL_ID"];
+                            userDetails.ContactNo = (string) reader[DataAccess.ContactNo_Output];
+                            userDetails.EmailId = (string) reader[DataAccess.EmailId_Output];
                         }
                     }
                 }
@@ -97,7 +98,7 @@
         /// <param name="otp">Otp</param>
         private async Task SendOtpToContactNo(string contactNo, string otp)
         {
-            // Send otp to contact no.
+            // TODO: Send otp to contact no.
         }
 
         /// <summary>
@@ -107,7 +108,7 @@
         /// <param name="otp">Otp</param>
         private async Task SendOtpToEmailId(string emailId, string otp)
         {
-            // Send otp to email id.
+            // TODO: Send otp to email id.
         }
     }
 }

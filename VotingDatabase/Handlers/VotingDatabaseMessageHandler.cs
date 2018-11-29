@@ -1,8 +1,8 @@
 ﻿namespace VotingDatabase.Handlers
 {
+    using global::VotingDatabase.Model;
     using System;
     using System.Threading.Tasks;
-    using global::VotingDatabase.Model;
 
     /// <summary>
     /// Voting database message handler class.
