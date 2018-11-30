@@ -33,6 +33,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
     };
 
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
+        $scope.update("none");
         if (aadharNo === undefined || aadharNo.toString().length !== 12) {
             alert("Invalid Aadhar No");
             return;
@@ -41,10 +42,10 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
         })
-        .then(function (data, status) {
+        .then(function (data) {
             // Use status and data to notify user accordingly.
             $scope.item = undefined;
-            document.getElementById("txtEnterOtpDiv").style.display = "block";
+            $scope.update("block");
             if (data.statusText === "OK") {
                 $scope.OtpSendingMessage = "OTP sent to registered mobile no and email id.";
                 $scope.OtpSendingStatus = "green";
@@ -53,5 +54,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.OtpSendingStatus = "red";
             }
         });
+    };
+
+    $scope.update = function (enterOtpDivDisplay) {
+        if (enterOtpDivDisplay !== undefined) {
+            document.getElementById("txtEnterOtpDiv").style.display = enterOtpDivDisplay;
+        }
     };
 }]);
