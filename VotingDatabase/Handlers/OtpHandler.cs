@@ -2,6 +2,8 @@
 {
     using global::VotingDatabase.DataAccess;
     using global::VotingDatabase.Model;
+    using SendGrid;
+    using SendGrid.Helpers.Mail;
     using System;
     using System.Data;
     using System.Data.SqlClient;
@@ -35,7 +37,7 @@
             var otp = new Random().Next(1000, 9999);
             var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
-            var otpMessageForUser = string.Concat(otp, " is OTP for Matdaan. It will be invalid after 10 minutes.");
+            var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar. It will be invalid after 10 minutes.");
 
             if (contactDetails.ContactNo != null)
             {
@@ -44,7 +46,7 @@
 
             if (contactDetails.EmailId != null)
             {
-                await SendOtpToEmailId(contactDetails.EmailId, otpMessageForUser);
+                SendOtpToEmailId(contactDetails.EmailId, otpMessageForUser).Wait();
             }
         }
 
@@ -102,13 +104,18 @@
         }
 
         /// <summary>
-        /// Send otp to email id.
+        /// Send Otp to email id.
         /// </summary>
-        /// <param name="emailId">Email id</param>
-        /// <param name="otp">Otp</param>
-        private async Task SendOtpToEmailId(string emailId, string otp)
+        private static async Task SendOtpToEmailId(string emailId, string otp)
         {
-            // TODO: Send otp to email id.
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("aadhar@gov.in", "Aadhar");
+            const string subject = "OTP for Aadhar verification";
+            var to = new EmailAddress(emailId, string.Empty);
+            var htmlContent = string.Empty;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, otp, htmlContent);
+            await client.SendEmailAsync(msg);
         }
     }
 }

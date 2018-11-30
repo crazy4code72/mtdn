@@ -1,17 +1,16 @@
-﻿using VotingDatabase.Kafka;
-
-namespace VotingDatabase
+﻿namespace VotingDatabase
 {
-    using System;
     using global::VotingDatabase.Handlers;
+    using global::VotingDatabase.Kafka;
     using global::VotingDatabase.Model;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+    using Newtonsoft.Json;
+    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
-    using Newtonsoft.Json;
 
     public class VotingDatabase : StatelessService
     {
