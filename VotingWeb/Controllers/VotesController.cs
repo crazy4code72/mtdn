@@ -152,5 +152,33 @@ namespace VotingWeb.Controllers
                 };
             }
         }
+
+        /// <summary>
+        /// Verify Otp for Aadhar no.
+        /// </summary>
+        /// <param name="aadharNo">Aadhar no</param>
+        /// <param name="userEnteredOtp">User entered otp</param>
+        /// <returns>Action result</returns>
+        // POST: api/Votes/VerifyOtp/aadharNo/userEnteredOtp
+        [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
+        public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
+        {
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
+            string proxyUrl = $"{proxyAddress}/api/VoteData/VerifyOtp/{aadharNo}/{userEnteredOtp}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+            StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}, {{ 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
+            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Content = await response.Content.ReadAsStringAsync()
+                };
+            }
+        }
     }
 }

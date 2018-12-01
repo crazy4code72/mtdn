@@ -35,8 +35,12 @@
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterOtp" type="number" style="width: 200px" class="form-control" placeholder="Enter OTP" ng-model="userEnteredOtp" required="required" />
+                        <input id="txtEnterOtp" type="number" class="form-control" placeholder="Enter OTP" ng-model="userEnteredOtp" required="required" />
                     </div>
+                    <button id="btnVerifyOtp" class="btn btn-default" ng-click="VerifyOtp(aadharNo, userEnteredOtp)">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        Verify OTP
+                    </button>
                 </div>
             </div>
         </div>

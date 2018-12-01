@@ -130,5 +130,18 @@ namespace VotingData.Controllers
 
             return new OkResult();
         }
+
+        /// <summary>
+        /// Verify Otp for the Aadhar no.
+        /// </summary>
+        /// <param name="aadharNo">Aadhar no</param>
+        /// <param name="userEnteredOtp">User entered otp</param>
+        /// <returns>Action result</returns>
+        // POST api/VoteData/VerifyOtp/aadharNo/userEnteredOtp
+        [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
+        public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
+        {
+            return new OkResult();
+        }
     }
 }

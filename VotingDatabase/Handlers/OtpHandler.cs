@@ -34,7 +34,7 @@
         /// <param name="aadharNo">Aadhar no</param>
         public async Task GetContactDetailsAndSendOtpForAadharNo(string aadharNo)
         {
-            var otp = new Random().Next(1000, 9999);
+            var otp = new Random().Next(100000, 999999);
             var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
             var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar. It will be invalid after 10 minutes.");
