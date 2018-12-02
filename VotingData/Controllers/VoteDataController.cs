@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Text;
 using Confluent.Kafka.Serialization;
 using Newtonsoft.Json;
+using VotingData.Handlers;
 using VotingData.Kafka;
 using VotingData.Model;
+using VotingDatabase;
 
 namespace VotingData.Controllers
 {
@@ -18,11 +20,34 @@ namespace VotingData.Controllers
     [Route("api/[controller]")]
     public class VoteDataController : Controller
     {
+        /// <summary>
+        /// State manager.
+        /// </summary>
         private readonly IReliableStateManager stateManager;
 
-        public VoteDataController(IReliableStateManager stateManager)
+        /// <summary>
+        /// Voting database parameters.
+        /// </summary>
+        private readonly VotingDatabaseParameters votingDatabaseParameters;
+
+        /// <summary>
+        /// Otp verification handler.
+        /// </summary>
+        private IOtpVerificationHandler otpVerificationHandler;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="stateManager">State manager</param>
+        /// <param name="votingDatabaseParameters">Database parameters</param>
+        /// <param name="otpVerificationHandler">Otp verification handler</param>
+        public VoteDataController(IReliableStateManager stateManager/*,
+                                  VotingDatabaseParameters votingDatabaseParameters,
+                                  IOtpVerificationHandler otpVerificationHandler*/)
         {
             this.stateManager = stateManager;
+            //this.votingDatabaseParameters = votingDatabaseParameters;
+            //this.otpVerificationHandler = otpVerificationHandler;
         }
 
         // GET api/VoteData
@@ -141,7 +166,13 @@ namespace VotingData.Controllers
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
-            return new OkResult();
+            if (this.otpVerificationHandler == null)
+            {
+                this.otpVerificationHandler = new OtpVerificationHandler();
+            }
+            var otpVerified = this.otpVerificationHandler.VerifyOtp(aadharNo, userEnteredOtp);
+            if (otpVerified) return new OkResult();
+            return new BadRequestResult();
         }
     }
 }
