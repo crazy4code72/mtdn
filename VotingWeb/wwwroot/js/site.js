@@ -45,11 +45,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
         })
-        .then(function (data) {
+        .then(function (response) {
             // Use status and data to notify user accordingly.
             $scope.item = undefined;
             $scope.update("block");
-            if (data.statusText === "OK") {
+            if (response.data === "Success") {
                 $scope.OtpSendingMessage = "OTP sent to registered mobile no and email id.";
                 $scope.OtpSendingStatus = "green";
             } else {
@@ -69,9 +69,9 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
         })
-        .then(function (data) {
+        .then(function (response) {
             // Use status and data to notify user accordingly.
-            if (data.statusText === "OK") {
+            if (response.data === "Success") {
                 console.log("success");
             } else {
                 console.log("failure");

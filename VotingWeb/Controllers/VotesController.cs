@@ -1,3 +1,5 @@
+using VotingWeb.Model;
+
 namespace VotingWeb.Controllers
 {
     using System;
@@ -145,11 +147,7 @@ namespace VotingWeb.Controllers
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return new ContentResult
-                {
-                    StatusCode = (int)response.StatusCode,
-                    Content = await response.Content.ReadAsStringAsync()
-                };
+                return CreateActionResult(response);
             }
         }
 
@@ -173,12 +171,24 @@ namespace VotingWeb.Controllers
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return new ContentResult
-                {
-                    StatusCode = (int)response.StatusCode,
-                    Content = await response.Content.ReadAsStringAsync()
-                };
+                return CreateActionResult(response);
             }
+        }
+
+        /// <summary>
+        /// Create action result
+        /// </summary>
+        /// <param name="response">Http response</param>
+        /// <returns>Action result</returns>
+        private static IActionResult CreateActionResult(HttpResponseMessage response)
+        {
+            return new ContentResult
+            {
+                StatusCode = (int)Enums.ResponseMessageCode.Success,
+                Content = (int)response.StatusCode == (int)Enums.ResponseMessageCode.Success
+                            ? Enums.ResponseMessageCode.Success.ToString()
+                            : Enums.ResponseMessageCode.Failure.ToString()
+            };
         }
     }
 }

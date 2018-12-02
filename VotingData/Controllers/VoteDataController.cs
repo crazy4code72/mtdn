@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
 using Confluent.Kafka.Serialization;
 using Newtonsoft.Json;
@@ -147,13 +146,13 @@ namespace VotingData.Controllers
                 }
                 catch (Exception)
                 {
-                    return new BadRequestResult();
+                    return new ContentResult { StatusCode = (int)Enums.ResponseMessageCode.Failure };
                 }
 
                 await Task.WhenAll(tasks);
             }
 
-            return new OkResult();
+            return new ContentResult { StatusCode = (int)Enums.ResponseMessageCode.Success };
         }
 
         /// <summary>
@@ -171,8 +170,8 @@ namespace VotingData.Controllers
                 this.otpVerificationHandler = new OtpVerificationHandler();
             }
             var otpVerified = this.otpVerificationHandler.VerifyOtp(aadharNo, userEnteredOtp);
-            if (otpVerified) return new OkResult();
-            return new BadRequestResult();
+            var statusCode = otpVerified ? (int)Enums.ResponseMessageCode.Success : (int)Enums.ResponseMessageCode.Failure;
+            return new ContentResult { StatusCode = statusCode };
         }
     }
 }

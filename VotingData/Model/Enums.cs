@@ -13,5 +13,11 @@
             Male = 1,
             Female = 2
         }
+
+        public enum ResponseMessageCode
+        {
+            Success = 200,
+            Failure = 202
+        }
     }
 }
