@@ -1,7 +1,8 @@
-using VotingWeb.Model;
-
 namespace VotingWeb.Controllers
 {
+    using global::VotingWeb.Model;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
@@ -11,8 +12,6 @@ namespace VotingWeb.Controllers
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using Newtonsoft.Json;
 
     [Produces("application/json")]
     [Route("api/[controller]")]
@@ -167,6 +166,29 @@ namespace VotingWeb.Controllers
             string proxyUrl = $"{proxyAddress}/api/VoteData/VerifyOtp/{aadharNo}/{userEnteredOtp}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
             StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}, {{ 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
+            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            {
+                return CreateActionResult(response);
+            }
+        }
+
+        /// <summary>
+        /// Link Voter Id to Aadhar.
+        /// </summary>
+        /// <param name="userDetails">User details</param>
+        /// <returns>Action result</returns>
+        // POST: api/Votes/LinkVoterIdToAadhar
+        [HttpPost("LinkVoterIdToAadhar")]
+        public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
+        {
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
+            string proxyUrl = $"{proxyAddress}/api/VoteData/LinkVoterIdToAadhar?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+            StringContent postContent = new StringContent($"{{ 'userDetails' : '{userDetails}' }}", Encoding.UTF8, "application/json");
             postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))

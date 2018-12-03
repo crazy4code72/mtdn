@@ -1,20 +1,19 @@
-﻿using System;
-using System.Text;
-using Confluent.Kafka.Serialization;
-using Newtonsoft.Json;
-using VotingData.Handlers;
-using VotingData.Kafka;
-using VotingData.Model;
-using VotingDatabase;
-
-namespace VotingData.Controllers
+﻿namespace VotingData.Controllers
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using Confluent.Kafka.Serialization;
+    using global::VotingData.Handlers;
+    using global::VotingData.Kafka;
+    using global::VotingData.Model;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.ServiceFabric.Data;
     using Microsoft.ServiceFabric.Data.Collections;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using VotingDatabase;
 
     [Route("api/[controller]")]
     public class VoteDataController : Controller
@@ -33,6 +32,11 @@ namespace VotingData.Controllers
         /// Otp verification handler.
         /// </summary>
         private IOtpVerificationHandler otpVerificationHandler;
+
+        /// <summary>
+        /// Voter id link handler.
+        /// </summary>
+        private IVoterIdLinkHandler voterIdLinkHandler;
 
         /// <summary>
         /// Constructor
@@ -170,6 +174,24 @@ namespace VotingData.Controllers
                 this.otpVerificationHandler = new OtpVerificationHandler();
             }
             var otpVerified = this.otpVerificationHandler.VerifyOtp(aadharNo, userEnteredOtp);
+            var statusCode = otpVerified ? (int)Enums.ResponseMessageCode.Success : (int)Enums.ResponseMessageCode.Failure;
+            return new ContentResult { StatusCode = statusCode };
+        }
+
+        /// <summary>
+        /// Link Voter Id to Aadhar.
+        /// </summary>
+        /// <param name="userDetails">User details</param>
+        /// <returns>Action result</returns>
+        // POST: api/Votes/LinkVoterIdToAadhar
+        [HttpPost("LinkVoterIdToAadhar")]
+        public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
+        {
+            if (this.voterIdLinkHandler == null)
+            {
+                this.voterIdLinkHandler = new VoterIdLinkHandler();
+            }
+            var otpVerified = this.voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
             var statusCode = otpVerified ? (int)Enums.ResponseMessageCode.Success : (int)Enums.ResponseMessageCode.Failure;
             return new ContentResult { StatusCode = statusCode };
         }

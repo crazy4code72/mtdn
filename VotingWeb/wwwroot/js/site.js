@@ -99,7 +99,36 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             alert("Invalid Voter Id details");
             return;
         }
-        console.log("Voter Id successfully linked to Aadhar");
+
+        console.log("Voter Id linking to Aadhar initiated");
+        var json = {
+            "AadharNo": aadharNo,
+            "VoterId": voterId,
+            "Name": name,
+            "DOB": dob,
+            "FatherName": fatherName,
+            "Gender": gender
+        };
+        var payloadData = JSON.stringify(json);
+        $http({
+            method: 'POST',
+            url: 'api/Votes/LinkVoterIdToAadhar',
+            data: payloadData,
+            headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        })
+        .then(function (response) {
+            $scope.update("block", "block");
+            if (response.data === "Success") {
+                $scope.VoterIdLinkingMessage = "Voter Id successfully linked to Aadhar.";
+                $scope.VoterIdLinkingStatus = "green";
+                document.getElementById("txtAddAadharNo").disabled = true;
+                console.log("Voter Id successfully linked to Aadhar");
+            } else {
+                $scope.VoterIdLinkingMessage = "Failed to link Voter Id with Aadhar.";
+                $scope.VoterIdLinkingStatus = "red";
+                console.log("Failed to link Voter Id with Aadhar");
+            }
+        });
     };
 
     // Update flags/status for the UI elements etc...

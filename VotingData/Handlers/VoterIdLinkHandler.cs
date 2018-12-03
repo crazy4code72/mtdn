@@ -5,28 +5,16 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using VotingData.Model;
-using VotingData.DataAccess;
-using VotingDatabase;
 
 namespace VotingData.Handlers
 {
-    public class OtpVerificationHandler : IOtpVerificationHandler
+    public class VoterIdLinkHandler : IVoterIdLinkHandler
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="votingDatabaseParameters"></param>
-        //public OtpVerificationHandler(VotingDatabaseParameters votingDatabaseParameters)
-        //{
-        //    this.votingDatabaseParameters = votingDatabaseParameters;
-        //}
-
         /// <summary>
         /// Verify otp.
         /// </summary>
-        /// <param name="aadharNo">Aadhar no</param>
-        /// <param name="userEnteredOtp">User entered otp</param>
-        public bool VerifyOtp(string aadharNo, string userEnteredOtp)
+        /// <param name="userDetails">User details</param>
+        public bool LinkVoterIdToAadhar(UserDetails userDetails)
         {
             bool otpVerified = false;
             try
@@ -35,14 +23,13 @@ namespace VotingData.Handlers
                 {
                     connection.Open();
 
-                    var sqlCommand = new SqlCommand(DataAccess.DataAccess.VerifyOtp, connection)
+                    var sqlCommand = new SqlCommand(DataAccess.DataAccess.LinkVoterIdToAadhar, connection)
                     {
                         CommandType = CommandType.StoredProcedure
                     };
 
                     // Add parameters
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.AadharNo_Input, aadharNo));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Otp_Input, userEnteredOtp));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.AadharNo_Input, userDetails.AadharNo));
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {

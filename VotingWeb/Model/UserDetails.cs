@@ -1,4 +1,4 @@
-﻿namespace VotingData.Model
+﻿namespace VotingWeb.Model
 {
     using Newtonsoft.Json;
 
