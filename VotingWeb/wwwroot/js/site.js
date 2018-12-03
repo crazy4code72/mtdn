@@ -77,11 +77,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             headers: { 'Content-Type': undefined }
         })
         .then(function (response) {
-            // Use status and data to notify user accordingly.
             if (response.data === "Success") {
                 $scope.OtpVerificationMessage = "OTP verified successfully.";
                 $scope.OtpVerificationStatus = "green";
                 $scope.update("block", "block");
+                document.getElementById("txtAddAadharNo").disabled = true;
                 console.log("VerifyOtp success response received");
             } else {
                 $scope.OtpVerificationMessage = "Incorrect OTP.";
