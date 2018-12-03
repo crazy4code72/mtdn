@@ -11,7 +11,7 @@
         </div>
 
         @* Div containing Aadhar No input box and Submit button to send OTP *@
-        <div class="row">
+        <div id="EnterAadharNoDiv" class="row">
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
@@ -22,17 +22,18 @@
                         Submit Aadhar No
                     </button>
                 </div>
-            </div>
-        </div>
-
-        @* Div containing Otp sent to contact no/email message, Enter otp input box, OTP verification message.*@
-        <div id="txtEnterOtpDiv" class="row" style="display:none">
-            <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
                         <input ng-model="OtpSendingMessage" disabled="disabled" style="border:transparent;background:transparent;width:500px;color:{{OtpSendingStatus}};" />
                     </div>
                 </div>
+            </div>
+        </div>
+        <hr/>
+
+        @* Div containing Otp sent to contact no/email message, Enter otp input box, OTP verification message.*@
+        <div id="EnterOtpDiv" class="row" style="display:none">
+            <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
                         <input id="txtEnterOtp" type="number" class="form-control" placeholder="Enter OTP" ng-model="userEnteredOtp" required="required" />
@@ -40,6 +41,49 @@
                     <button id="btnVerifyOtp" class="btn btn-default" ng-click="VerifyOtp(aadharNo, userEnteredOtp)">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                         Verify OTP
+                    </button>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input ng-model="OtpVerificationMessage" disabled="disabled" style="border:transparent;background:transparent;width:500px;color:{{OtpVerificationStatus}};" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+
+        @* Div containing Otp verification status message, Enter Voter Id details and Link to Aadhar button.*@
+        <div id="EnterVoterIdDiv" class="row" style="display:none">
+            <div class="col-xs-8 col-xs-offset-2">
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtEnterVoterId" type="text" class="form-control" placeholder="Enter Voter Id" ng-model="voterId" required="required" />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtEnterName" type="text" class="form-control" placeholder="Enter Name" ng-model="name" required="required" />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtEnterDOB" type="text" class="form-control" placeholder="Enter DOB (dd/mm/yyyy)" ng-model="dob" required="required" />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtEnterFatherName" type="text" class="form-control" placeholder="Enter Father's Name" ng-model="fatherName" required="required" />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtEnterGender" type="text" class="form-control" placeholder="Enter Gender" ng-model="gender" required="required" />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <button id="btnLinkVoterIdToAadhar" class="btn btn-default" ng-click="LinkVoterIdToAadhar(aadharNo, voterId, name, dob, fatherName, gender)">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        Link VoterId to Aadhar
                     </button>
                 </div>
             </div>
