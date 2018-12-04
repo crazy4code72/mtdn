@@ -191,9 +191,16 @@
             {
                 this.voterIdLinkHandler = new VoterIdLinkHandler();
             }
-            var otpVerified = this.voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
-            var statusCode = otpVerified ? (int)Enums.ResponseMessageCode.Success : (int)Enums.ResponseMessageCode.Failure;
-            return new ContentResult { StatusCode = statusCode };
+            var voterIdLinkingStatus = this.voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
+
+            switch (voterIdLinkingStatus)
+            {
+                case Enums.VoterIdLinkingStatus.Unauthorized: return new ContentResult { StatusCode = (int) Enums.VoterIdLinkingStatus.Unauthorized };
+                case Enums.VoterIdLinkingStatus.LinkingFailed: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed };
+                case Enums.VoterIdLinkingStatus.AlreadyLinked: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked };
+                case Enums.VoterIdLinkingStatus.SuccessfullyLinked: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked };
+                default: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed };
+            }
         }
     }
 }

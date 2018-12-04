@@ -19,5 +19,13 @@
             Success = 200,
             Failure = 202
         }
+
+        public enum VoterIdLinkingStatus
+        {
+            LinkingFailed = 201,
+            AlreadyLinked = 202,
+            SuccessfullyLinked = 200,
+            Unauthorized = 203
+        }
     }
 }

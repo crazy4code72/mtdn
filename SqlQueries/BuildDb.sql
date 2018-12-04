@@ -1,6 +1,6 @@
 -- Create database named Matdaan and then create the following tables.
     CREATE TABLE VOTING(
-        VOTER_ID NVARCHAR (20) NOT NULL,
+        VOTER_ID NVARCHAR (10) NOT NULL,
         NAME NVARCHAR (50) NOT NULL,
         FATHER_NAME NVARCHAR (50) NOT NULL,
         DOB NVARCHAR(10) NOT NULL,
@@ -37,7 +37,7 @@ INSERT INTO [dbo].[VOTING]
            ,[LINKED_TO_AADHAR]
            ,[VOTED_FOR])
      VALUES
-           ('000123456789'
+           ('1234567890'
            ,'Mayank Shekhar'
            ,'Devendra Kumar Sinha'
            ,'01-12-1991'

@@ -193,7 +193,7 @@ namespace VotingWeb.Controllers
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return CreateActionResult(response);
+                return CreateVoterIdLinkActionResult(response);
             }
         }
 
@@ -210,6 +210,29 @@ namespace VotingWeb.Controllers
                 Content = (int)response.StatusCode == (int)Enums.ResponseMessageCode.Success
                             ? Enums.ResponseMessageCode.Success.ToString()
                             : Enums.ResponseMessageCode.Failure.ToString()
+            };
+        }
+
+        /// <summary>
+        /// Create action result
+        /// </summary>
+        /// <param name="response">Http response</param>
+        /// <returns>Action result</returns>
+        private static IActionResult CreateVoterIdLinkActionResult(HttpResponseMessage response)
+        {
+            string voterIdLinkStatus = string.Empty;
+            switch ((int)response.StatusCode)
+            {
+                case (int)Enums.VoterIdLinkingStatus.Unauthorized : voterIdLinkStatus = Enums.VoterIdLinkingStatus.Unauthorized.ToString(); break;
+                case (int)Enums.VoterIdLinkingStatus.LinkingFailed: voterIdLinkStatus = Enums.VoterIdLinkingStatus.LinkingFailed.ToString(); break;
+                case (int)Enums.VoterIdLinkingStatus.AlreadyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.AlreadyLinked.ToString(); break;
+                case (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.SuccessfullyLinked.ToString(); break;
+            }
+
+            return new ContentResult
+            {
+                StatusCode = (int)Enums.ResponseMessageCode.Success,
+                Content = voterIdLinkStatus
             };
         }
     }

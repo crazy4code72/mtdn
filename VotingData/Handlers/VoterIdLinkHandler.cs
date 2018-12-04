@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using VotingData.Model;
-
-namespace VotingData.Handlers
+﻿namespace VotingData.Handlers
 {
+    using System;
+    using System.Data;
+    using System.Data.SqlClient;
+    using global::VotingData.Model;
+
+    /// <summary>
+    /// Voter id link handler.
+    /// </summary>
     public class VoterIdLinkHandler : IVoterIdLinkHandler
     {
         /// <summary>
-        /// Verify otp.
+        /// Link Voter id to aadhar.
         /// </summary>
         /// <param name="userDetails">User details</param>
-        public bool LinkVoterIdToAadhar(UserDetails userDetails)
+        public Enums.VoterIdLinkingStatus LinkVoterIdToAadhar(UserDetails userDetails)
         {
-            bool otpVerified = false;
+            Enums.VoterIdLinkingStatus voterIdLinkingStatus = Enums.VoterIdLinkingStatus.Unauthorized;
             try
             {
                 using (SqlConnection connection = new SqlConnection(DataAccess.DataAccess.DbConnectionString))
@@ -30,22 +30,27 @@ namespace VotingData.Handlers
 
                     // Add parameters
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.AadharNo_Input, userDetails.AadharNo));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.VoterId_Input, userDetails.VoterId));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Name_Input, userDetails.Name));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Dob_Input, userDetails.DOB));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.FatherName_Input, userDetails.FatherName));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Gender_Input, userDetails.Gender));
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            otpVerified = (bool)reader[DataAccess.DataAccess.OtpVerified_Output];
+                            voterIdLinkingStatus = (Enums.VoterIdLinkingStatus)Enum.Parse(typeof(Enums.VoterIdLinkingStatus), (string)reader[DataAccess.DataAccess.VoterIdLinkingStatus_Output], true);
                         }
                     }
                 }
             }
             catch (Exception)
             {
-                return otpVerified;
+                return voterIdLinkingStatus;
             }
 
-            return otpVerified;
+            return voterIdLinkingStatus;
         }
     }
 }
