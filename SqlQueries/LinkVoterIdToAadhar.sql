@@ -1,4 +1,4 @@
-CREATE PROCEDURE LinkVoterIdToAadhar
+ALTER PROCEDURE LinkVoterIdToAadhar
     @AADHAR_NO NVARCHAR(12),
     @VOTER_ID NVARCHAR(10),
     @NAME NVARCHAR(50),
@@ -20,25 +20,27 @@ IF @OTP_VERIFIED = 1
 BEGIN
     IF @LINKED_TO_AADHAR = 0
     BEGIN
-        UPDATE VOTING
-        SET LINKED_TO_AADHAR = 1, @VOTER_ID_MATCHED = 1
-        WHERE VOTER_ID = @VOTER_ID AND NAME = @NAME AND FATHER_NAME = @FATHER_NAME AND GENDER = @GENDER AND DOB = @DOB;
+        BEGIN TRANSACTION
+            UPDATE VOTING
+            SET LINKED_TO_AADHAR = 1, @VOTER_ID_MATCHED = 1
+            WHERE VOTER_ID = @VOTER_ID AND NAME = @NAME AND FATHER_NAME = @FATHER_NAME AND GENDER = @GENDER AND DOB = @DOB;
 
-        IF @VOTER_ID_MATCHED = 1
-        BEGIN
-            UPDATE AADHAR
-            SET VOTER_ID = @VOTER_ID, @LINKING_SUCCESSFUL = 1
-            WHERE AADHAR_NO = @AADHAR_NO;
-        END
+            IF @VOTER_ID_MATCHED = 1
+            BEGIN
+                UPDATE AADHAR
+                SET VOTER_ID = @VOTER_ID, @LINKING_SUCCESSFUL = 1
+                WHERE AADHAR_NO = @AADHAR_NO;
+            END
 
-        IF @LINKING_SUCCESSFUL = 1
-        BEGIN
-            SELECT 'SuccessfullyLinked' AS VOTER_ID_LINKING_STATUS;
-        END
-        ELSE
-        BEGIN
-            SELECT 'LinkingFailed' AS VOTER_ID_LINKING_STATUS;
-        END
+            IF @LINKING_SUCCESSFUL = 1
+            BEGIN
+                SELECT 'SuccessfullyLinked' AS VOTER_ID_LINKING_STATUS;
+            END
+            ELSE
+            BEGIN
+                SELECT 'LinkingFailed' AS VOTER_ID_LINKING_STATUS;
+            END
+        COMMIT
     END
     ELSE
     BEGIN
