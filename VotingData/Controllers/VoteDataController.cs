@@ -192,15 +192,17 @@
                 this.voterIdLinkHandler = new VoterIdLinkHandler();
             }
             var voterIdLinkingStatus = this.voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
-
+            int? statusCode;
             switch (voterIdLinkingStatus)
             {
-                case Enums.VoterIdLinkingStatus.Unauthorized: return new ContentResult { StatusCode = (int) Enums.VoterIdLinkingStatus.Unauthorized };
-                case Enums.VoterIdLinkingStatus.LinkingFailed: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed };
-                case Enums.VoterIdLinkingStatus.AlreadyLinked: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked };
-                case Enums.VoterIdLinkingStatus.SuccessfullyLinked: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked };
-                default: return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed };
+                case Enums.VoterIdLinkingStatus.Unauthorized: statusCode = (int) Enums.VoterIdLinkingStatus.Unauthorized; break;
+                case Enums.VoterIdLinkingStatus.LinkingFailed: statusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed; break;
+                case Enums.VoterIdLinkingStatus.AlreadyLinked: statusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked; break;
+                case Enums.VoterIdLinkingStatus.SuccessfullyLinked: statusCode = (int) Enums.VoterIdLinkingStatus.SuccessfullyLinked; break;
+                default: statusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed; break;
             }
+
+            return new ContentResult { StatusCode = statusCode };
         }
     }
 }
