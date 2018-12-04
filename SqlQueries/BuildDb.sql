@@ -40,7 +40,7 @@ INSERT INTO [dbo].[VOTING]
            ('1234567890'
            ,'Mayank Shekhar'
            ,'Devendra Kumar Sinha'
-           ,'01-12-1991'
+           ,'01/12/1991'
            ,'Male'
            ,0
            ,NULL)

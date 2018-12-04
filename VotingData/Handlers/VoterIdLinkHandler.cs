@@ -34,13 +34,14 @@
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Name_Input, userDetails.Name));
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Dob_Input, userDetails.DOB));
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.FatherName_Input, userDetails.FatherName));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Gender_Input, userDetails.Gender));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Gender_Input, userDetails.Gender.ToString()));
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            voterIdLinkingStatus = (Enums.VoterIdLinkingStatus)Enum.Parse(typeof(Enums.VoterIdLinkingStatus), (string)reader[DataAccess.DataAccess.VoterIdLinkingStatus_Output], true);
+                            var value = (string)reader[DataAccess.DataAccess.VoterIdLinkingStatus_Output];
+                            voterIdLinkingStatus = (Enums.VoterIdLinkingStatus)Enum.Parse(typeof(Enums.VoterIdLinkingStatus), value);
                         }
                     }
                 }
