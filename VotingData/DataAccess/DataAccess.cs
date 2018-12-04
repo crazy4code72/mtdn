@@ -18,8 +18,8 @@
         public static string ContactNo_Output = "CONTACT_NO";
         public static string EmailId_Output = "EMAIL_ID";
 
-        // No of rows affected.
-        public static string NoOfRowsAffected_Output = "NO_OF_ROWS_AFFECTED";
+        // Otp verified.
+        public static string OtpVerified_Output = "OTP_VERIFIED";
 
         //TODO: Needs to be removed from here.
         // DB Connection string

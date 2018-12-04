@@ -35,7 +35,7 @@ namespace VotingData.Handlers
                     {
                         while (reader.Read())
                         {
-                            otpVerified = (int)reader[DataAccess.DataAccess.NoOfRowsAffected_Output] == 1;
+                            otpVerified = (bool)reader[DataAccess.DataAccess.OtpVerified_Output];
                         }
                     }
                 }
