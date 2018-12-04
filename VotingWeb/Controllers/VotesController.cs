@@ -188,9 +188,8 @@ namespace VotingWeb.Controllers
             int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
             string proxyUrl = $"{proxyAddress}/api/VoteData/LinkVoterIdToAadhar?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
-            StringContent postContent = new StringContent($"{{ 'userDetails' : '{userDetails}' }}", Encoding.UTF8, "application/json");
+            StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'Name' : '{userDetails.Name}', 'DOB' : '{userDetails.DOB}', 'FatherName' : '{userDetails.FatherName}', 'Gender' : '{userDetails.Gender}' }}", Encoding.UTF8, "application/json");
             postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
                 return CreateVoterIdLinkActionResult(response);
