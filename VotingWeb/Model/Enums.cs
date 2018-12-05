@@ -11,7 +11,8 @@
         public enum EventType
         {
             SendOtp = 1,
-            VerifyOtp = 2
+            VerifyOtp = 2,
+            CastVote = 3
         }
 
         public enum Gender
