@@ -187,6 +187,9 @@
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
+            // Check if this voter id is already linked, check in state.
+            // If Yes, return Already Linked (No db call)
+            // If No, make db call, try to Link. Add in state only after Successfully Linked.
             if (this.voterIdLinkHandler == null)
             {
                 this.voterIdLinkHandler = new VoterIdLinkHandler();

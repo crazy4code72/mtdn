@@ -152,7 +152,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             document.getElementById("txtAddAadharNo").disabled = disableAadharTextField;
         }
         if (disableVoterIdTextField !== undefined) {
-            document.getElementById("txtEnterVoterId").disabled = disableAadharTextField;
+            document.getElementById("txtEnterVoterId").disabled = disableVoterIdTextField;
         }
     };
 
