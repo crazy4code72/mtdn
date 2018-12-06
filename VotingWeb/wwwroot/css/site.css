@@ -1,3 +1,10 @@
 ﻿.top-buffer {
     margin-top: 10px
 }
+
+.labels {
+    border: transparent;
+    background: transparent;
+    width: 460px;
+    padding-top: 8px;
+}
