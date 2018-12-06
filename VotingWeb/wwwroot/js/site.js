@@ -36,7 +36,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     // Submit Aadhar no to send otp to registered contact no and email id.
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
-        $scope.update("none", "none", false, undefined);
+        $scope.updateAadharAndOtpElements("none", "none", false, undefined, undefined, undefined, undefined);
         if (aadharNo === undefined || aadharNo.toString().length !== 12) {
             alert("Invalid Aadhar No");
             return;
@@ -53,12 +53,12 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             if (response.data === "Success") {
                 $scope.OtpSendingMessage = "OTP sent to registered mobile no and email id.";
                 $scope.OtpSendingStatus = "green";
-                $scope.update("block", "none", false, undefined);
+                $scope.updateAadharAndOtpElements("block", "none", false, undefined, undefined, undefined, undefined);
                 console.log("SubmitAadharNoToSendOtp success response received");
             } else {
                 $scope.OtpSendingMessage = "OTP sending to registered mobile no and email id failed, please try again.";
                 $scope.OtpSendingStatus = "red";
-                $scope.update("none", "none", false, undefined);
+                $scope.updateAadharAndOtpElements("none", "none", false, undefined, undefined, undefined, undefined);
                 console.log("SubmitAadharNoToSendOtp failure response received");
             }
         });
@@ -80,12 +80,12 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             if (response.data === "Success") {
                 $scope.OtpVerificationMessage = "OTP verified successfully.";
                 $scope.OtpVerificationStatus = "green";
-                $scope.update("block", "block", true, undefined);
+                $scope.updateAadharAndOtpElements("block", "block", true, undefined, true, true, true);
                 console.log("VerifyOtp success response received");
             } else {
                 $scope.OtpVerificationMessage = "Incorrect OTP.";
                 $scope.OtpVerificationStatus = "red";
-                $scope.update("block", "none", false, undefined);
+                $scope.updateAadharAndOtpElements("block", "none", false, undefined, false, false, false);
                 console.log("VerifyOtp failure response received");
             }
         });
@@ -118,30 +118,31 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         .then(function (response) {
             if (response.data === "SuccessfullyLinked") {
                 $scope.updateVoterIdLinkMsgAndColor("Voter Id successfully linked to Aadhar.", "green");
-                $scope.update(undefined, undefined, true, true);
+                $scope.updateAadharAndOtpElements(undefined, undefined, true, true, undefined, undefined, undefined);
             }
             else if (response.data === "AlreadyLinked") {
                 $scope.updateVoterIdLinkMsgAndColor("Voter Id is already linked to Aadhar.", "blue");
-                $scope.update(undefined, undefined, true, true);
+                $scope.updateAadharAndOtpElements(undefined, undefined, true, true, undefined, undefined, undefined);
             }
             else if (response.data === "LinkingFailed") {
                 $scope.updateVoterIdLinkMsgAndColor("Incorrect Voter Id, failed to link Voter Id to Aadhar.", "red");
-                $scope.update(undefined, undefined, true, false);
+                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
             }
             else if (response.data === "Unauthorized") {
                 $scope.updateVoterIdLinkMsgAndColor("Unauthorized user, failed to link Voter Id to Aadhar.", "red");
-                $scope.update(undefined, undefined, true, false);
+                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
             }
             else
             {
                 $scope.updateVoterIdLinkMsgAndColor("Something went wrong, please try again.", "red");
-                $scope.update(undefined, undefined, true, false);
+                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
             }
         });
     };
 
     // Update flags/status for the UI elements etc...
-    $scope.update = function (enterOtpDivDisplay, enterVoterIdDivDisplay, disableAadharTextField, disableVoterIdTextField) {
+    $scope.updateAadharAndOtpElements = function (enterOtpDivDisplay, enterVoterIdDivDisplay, disableAadharTextField, disableVoterIdTextField, disableVerifyOtpButton,
+                              disableSubmitAadharButton, disableOtpTextField) {
         if (enterOtpDivDisplay !== undefined) {
             document.getElementById("EnterOtpDiv").style.display = enterOtpDivDisplay;
         }
@@ -153,6 +154,15 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }
         if (disableVoterIdTextField !== undefined) {
             document.getElementById("txtEnterVoterId").disabled = disableVoterIdTextField;
+        }
+        if (disableVerifyOtpButton !== undefined) {
+            document.getElementById("btnVerifyOtp").disabled = disableVerifyOtpButton;
+        }
+        if (disableSubmitAadharButton !== undefined) {
+            document.getElementById("btnAddAadharNo").disabled = disableSubmitAadharButton;
+        }
+        if (disableOtpTextField !== undefined) {
+            document.getElementById("txtEnterOtp").disabled = disableOtpTextField;
         }
     };
 
