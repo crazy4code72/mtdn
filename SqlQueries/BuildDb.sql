@@ -6,7 +6,6 @@
         DOB NVARCHAR(10) NOT NULL,
         GENDER NVARCHAR(10) NOT NULL,
         LINKED_TO_AADHAR BIT DEFAULT(0),
-        VOTED_FOR NVARCHAR(30),
         CONSTRAINT [PK_VOTERID] PRIMARY KEY CLUSTERED (VOTER_ID ASC),
     );
 
@@ -34,16 +33,14 @@ INSERT INTO [dbo].[VOTING]
            ,[FATHER_NAME]
            ,[DOB]
            ,[GENDER]
-           ,[LINKED_TO_AADHAR]
-           ,[VOTED_FOR])
+           ,[LINKED_TO_AADHAR])
      VALUES
            ('1234567890'
            ,'Mayank Shekhar'
            ,'Devendra Kumar Sinha'
            ,'01/12/1991'
            ,'Male'
-           ,0
-           ,NULL)
+           ,0)
 GO
 
 INSERT INTO [dbo].[AADHAR]
