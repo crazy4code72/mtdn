@@ -118,31 +118,31 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         .then(function (response) {
             if (response.data === "SuccessfullyLinked") {
                 $scope.updateVoterIdLinkMsgAndColor("Voter Id successfully linked to Aadhar.", "green");
-                $scope.updateAadharAndOtpElements(undefined, undefined, true, true, undefined, undefined, undefined);
+                $scope.updateVoterCardElements(true, "block");
             }
             else if (response.data === "AlreadyLinked") {
                 $scope.updateVoterIdLinkMsgAndColor("Voter Id is already linked to Aadhar.", "blue");
-                $scope.updateAadharAndOtpElements(undefined, undefined, true, true, undefined, undefined, undefined);
+                $scope.updateVoterCardElements(true, "block");
             }
             else if (response.data === "LinkingFailed") {
                 $scope.updateVoterIdLinkMsgAndColor("Incorrect Voter Id, failed to link Voter Id to Aadhar.", "red");
-                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
+                $scope.updateVoterCardElements(false, "block");
             }
             else if (response.data === "Unauthorized") {
                 $scope.updateVoterIdLinkMsgAndColor("Unauthorized user, failed to link Voter Id to Aadhar.", "red");
-                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
+                $scope.updateVoterCardElements(false, "block");
             }
             else
             {
                 $scope.updateVoterIdLinkMsgAndColor("Something went wrong, please try again.", "red");
-                $scope.updateAadharAndOtpElements(undefined, undefined, true, false, undefined, undefined, undefined);
+                $scope.updateVoterCardElements(false, "block");
             }
         });
     };
 
-    // Update flags/status for the UI elements etc...
-    $scope.updateAadharAndOtpElements = function (enterOtpDivDisplay, enterVoterIdDivDisplay, disableAadharTextField, disableVoterIdTextField, disableVerifyOtpButton,
-                              disableSubmitAadharButton, disableOtpTextField) {
+    // Update flags/status for the Aadhar and Otp elements.
+    $scope.updateAadharAndOtpElements = function (enterOtpDivDisplay, enterVoterIdDivDisplay, disableAadharTextField, disableVoterIdTextField,
+                                                  disableVerifyOtpButton, disableSubmitAadharButton, disableOtpTextField) {
         if (enterOtpDivDisplay !== undefined) {
             document.getElementById("EnterOtpDiv").style.display = enterOtpDivDisplay;
         }
@@ -163,6 +163,21 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }
         if (disableOtpTextField !== undefined) {
             document.getElementById("txtEnterOtp").disabled = disableOtpTextField;
+        }
+    };
+
+    // Update flags/status for the Voter card elements.
+    $scope.updateVoterCardElements = function (disableVoterCardElements, hideVoterCardDiv) {
+        if (hideVoterCardDiv !== undefined) {
+            document.getElementById("EnterVoterIdDiv").style.display = hideVoterCardDiv;
+        }
+        if (disableVoterCardElements !== undefined) {
+            document.getElementById("txtEnterVoterId").disabled = disableVoterCardElements;
+            document.getElementById("txtEnterName").disabled = disableVoterCardElements;
+            document.getElementById("txtEnterFatherName").disabled = disableVoterCardElements;
+            document.getElementById("txtEnterDOB").disabled = disableVoterCardElements;
+            document.getElementById("txtEnterGender").disabled = disableVoterCardElements;
+            document.getElementById("btnLinkVoterIdToAadhar").disabled = disableVoterCardElements;
         }
     };
 
