@@ -180,6 +180,10 @@
 
         /// <summary>
         /// Link Voter Id to Aadhar.
+        /// Check if this voter id is already linked, check in state.
+        /// If Yes, return Already Linked (No db call)
+        /// If No, make db call, try to Link.
+        /// Add in state only after Successfully Linked.
         /// </summary>
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
@@ -187,9 +191,12 @@
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
-            // Check if this voter id is already linked, check in state.
-            // If Yes, return Already Linked (No db call)
-            // If No, make db call, try to Link. Add in state only after Successfully Linked.
+            var voterIdLinkedFoundInState = await VoterIdLinkedFoundInState(userDetails);
+            if (voterIdLinkedFoundInState)
+            {
+                return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked };
+            }
+
             if (this.voterIdLinkHandler == null)
             {
                 this.voterIdLinkHandler = new VoterIdLinkHandler();
@@ -198,14 +205,63 @@
             int? statusCode;
             switch (voterIdLinkingStatus)
             {
-                case Enums.VoterIdLinkingStatus.Unauthorized: statusCode = (int) Enums.VoterIdLinkingStatus.Unauthorized; break;
+                case Enums.VoterIdLinkingStatus.Unauthorized: statusCode = (int)Enums.VoterIdLinkingStatus.Unauthorized; break;
                 case Enums.VoterIdLinkingStatus.LinkingFailed: statusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed; break;
                 case Enums.VoterIdLinkingStatus.AlreadyLinked: statusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked; break;
-                case Enums.VoterIdLinkingStatus.SuccessfullyLinked: statusCode = (int) Enums.VoterIdLinkingStatus.SuccessfullyLinked; break;
+                case Enums.VoterIdLinkingStatus.SuccessfullyLinked: statusCode = (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked; break;
                 default: statusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed; break;
             }
 
+            if (statusCode.Equals((int) Enums.VoterIdLinkingStatus.SuccessfullyLinked))
+            {
+                await UpdateVoterIdLinkInState(userDetails);
+            }
+
             return new ContentResult { StatusCode = statusCode };
+        }
+
+        /// <summary>
+        /// Check if Voter Id linked to Aadhar present in state.
+        /// </summary>
+        /// <param name="userDetails">User details</param>
+        /// <returns>Bool</returns>
+        private async Task<bool> VoterIdLinkedFoundInState(UserDetails userDetails)
+        {
+            CancellationToken ct = new CancellationToken();
+            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Voting");
+
+            using (ITransaction tx = this.stateManager.CreateTransaction())
+            {
+                IAsyncEnumerable<KeyValuePair<string, string>> list = await votesDictionary.CreateEnumerableAsync(tx);
+                IAsyncEnumerator<KeyValuePair<string, string>> enumerator = list.GetAsyncEnumerator();
+
+                KeyValuePair<string, string> keyValuePair;
+                while (await enumerator.MoveNextAsync(ct))
+                {
+                    keyValuePair = enumerator.Current;
+                    if (keyValuePair.Key.Equals(userDetails.AadharNo) && keyValuePair.Value.Equals(userDetails.VoterId))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Update Voter Id link in state after SuccessfullyLinked status.
+        /// </summary>
+        /// <param name="userDetails">User details</param>
+        /// <returns>bool</returns>
+        private async Task UpdateVoterIdLinkInState(UserDetails userDetails)
+        {
+            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Voting");
+
+            using (ITransaction tx = this.stateManager.CreateTransaction())
+            {
+                await votesDictionary.AddOrUpdateAsync(tx, userDetails.AadharNo, userDetails.VoterId, (key, oldValue) => userDetails.VoterId);
+                await tx.CommitAsync();
+            }
         }
     }
 }
