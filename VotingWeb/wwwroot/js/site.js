@@ -53,7 +53,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateOtpElements("block", false, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
             } else {
-                $scope.updateAadharElements("block", false, "OTP sending to registered mobile no and email id failed, please try again.", "red");
+                $scope.updateAadharElements("block", false, "OTP sending failed, please try again.", "red");
                 $scope.updateOtpElements("none", undefined, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
             }
