@@ -27,7 +27,7 @@
         public bool IsVoterIdLinkedWithAadhar { get; set; }
 
         [JsonProperty]
-        public string VotedTo { get; set; }
+        public string VoteFor { get; set; }
 
         [JsonProperty]
         public Enums.Gender Gender { get; set; }
