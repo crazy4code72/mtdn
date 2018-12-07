@@ -1,3 +1,5 @@
+using VotingWeb.Helper;
+
 namespace VotingWeb.Controllers
 {
     using global::VotingWeb.Model;
@@ -146,7 +148,7 @@ namespace VotingWeb.Controllers
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return CreateActionResult(response);
+                return ActionResultCreator.CreateActionResult(response);
             }
         }
 
@@ -170,7 +172,7 @@ namespace VotingWeb.Controllers
 
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return CreateActionResult(response);
+                return ActionResultCreator.CreateActionResult(response);
             }
         }
 
@@ -192,47 +194,30 @@ namespace VotingWeb.Controllers
             postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                return CreateVoterIdLinkActionResult(response);
+                return ActionResultCreator.CreateVoterIdLinkActionResult(response);
             }
         }
 
         /// <summary>
-        /// Create action result
+        /// Cast vote.
         /// </summary>
-        /// <param name="response">Http response</param>
+        /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
-        private static IActionResult CreateActionResult(HttpResponseMessage response)
+        // POST: api/Votes/CastVote
+        [HttpPost("CastVote")]
+        public async Task<IActionResult> CastVote([FromBody] UserDetails userDetails)
         {
-            return new ContentResult
-            {
-                StatusCode = (int)Enums.ResponseMessageCode.Success,
-                Content = (int)response.StatusCode == (int)Enums.ResponseMessageCode.Success
-                            ? Enums.ResponseMessageCode.Success.ToString()
-                            : Enums.ResponseMessageCode.Failure.ToString()
-            };
-        }
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+            int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
+            string proxyUrl = $"{proxyAddress}/api/VoteData/CastVote?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
-        /// <summary>
-        /// Create action result
-        /// </summary>
-        /// <param name="response">Http response</param>
-        /// <returns>Action result</returns>
-        private static IActionResult CreateVoterIdLinkActionResult(HttpResponseMessage response)
-        {
-            string voterIdLinkStatus = string.Empty;
-            switch ((int)response.StatusCode)
+            StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'VoteFor' : '{userDetails.VoteFor}', 'Otp' : '{userDetails.Otp}' }}", Encoding.UTF8, "application/json");
+            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
             {
-                case (int)Enums.VoterIdLinkingStatus.Unauthorized : voterIdLinkStatus = Enums.VoterIdLinkingStatus.Unauthorized.ToString(); break;
-                case (int)Enums.VoterIdLinkingStatus.LinkingFailed: voterIdLinkStatus = Enums.VoterIdLinkingStatus.LinkingFailed.ToString(); break;
-                case (int)Enums.VoterIdLinkingStatus.AlreadyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.AlreadyLinked.ToString(); break;
-                case (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.SuccessfullyLinked.ToString(); break;
+                return ActionResultCreator.CreateCastVoteActionResult(response);
             }
-
-            return new ContentResult
-            {
-                StatusCode = (int)Enums.ResponseMessageCode.Success,
-                Content = voterIdLinkStatus
-            };
         }
     }
 }

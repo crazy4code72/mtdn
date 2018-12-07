@@ -20,6 +20,11 @@
         private readonly VotingDatabaseParameters votingDatabaseParameters;
 
         /// <summary>
+        /// Randomizer.
+        /// </summary>
+        private static readonly Random randomizer = new Random();
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="votingDatabaseParameters">Voting database parameters</param>
@@ -34,7 +39,7 @@
         /// <param name="aadharNo">Aadhar no</param>
         public async Task GetContactDetailsAndSendOtpForAadharNo(string aadharNo)
         {
-            var otp = new Random().Next(100000, 999999);
+            var otp = randomizer.Next(100000, 999999);
             var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
             var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar. It will be invalid after 10 minutes.");

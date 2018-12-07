@@ -28,5 +28,19 @@
             SuccessfullyLinked = 200,
             Unauthorized = 203
         }
+
+        public enum CastVoteStatus
+        {
+            SuccessfullyVoted = 200,
+            AlreadyVoted = 202,
+            VotingFailed = 203
+        }
+
+        public enum StateName
+        {
+            AadharNoVoterIdPair = 1,
+            VoterIdVoteForPair = 2,
+            AadharNoOtpPair = 3
+        }
     }
 }

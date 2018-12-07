@@ -40,6 +40,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateAadharElements("block", false, "Invalid Aadhar No.", "red");
             $scope.updateOtpElements("none", undefined, undefined, undefined);
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+            $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
 
@@ -52,10 +53,12 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", false, "OTP sent to registered mobile no and email id.", "green");
                 $scope.updateOtpElements("block", false, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             } else {
                 $scope.updateAadharElements("block", false, "OTP sending failed, please try again.", "red");
                 $scope.updateOtpElements("none", undefined, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
         });
     };
@@ -66,6 +69,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateAadharElements("block", false, undefined, undefined);
             $scope.updateOtpElements("block", false, "Incorrect OTP.", "red");
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+            $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
 
@@ -78,10 +82,12 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, "OTP verified successfully.", "green");
                 $scope.updateVoterCardElements("block", false, undefined, undefined);
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             } else {
                 $scope.updateAadharElements("block", false, undefined, undefined);
                 $scope.updateOtpElements("block", false, "Incorrect OTP.", "red");
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
         });
     };
@@ -94,6 +100,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateAadharElements("block", true, undefined, undefined);
             $scope.updateOtpElements("block", true, undefined, undefined);
             $scope.updateVoterCardElements("block", false, "Invalid Voter card details.", "red");
+            $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
 
@@ -110,27 +117,73 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id successfully linked to Aadhar.", "green");
+                $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (response.data === "AlreadyLinked") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id is already linked to Aadhar.", "blue");
+                $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (response.data === "LinkingFailed") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Incorrect Voter Id, failed to link Voter Id to Aadhar.", "red");
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
             else if (response.data === "Unauthorized") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Unauthorized user, failed to link Voter Id to Aadhar.", "red");
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
             else
             {
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Something went wrong, please try again.", "red");
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
+            }
+        });
+    };
+
+    // Submit Vote along with voter id and other details.
+    $scope.CastVote = function (aadharNo, voterId, castVoteFor, userEnteredOtp) {
+        if (aadharNo === undefined || aadharNo.toString().length !== 12 || voterId === undefined || voterId.length !== 10 ||
+            castVoteFor === undefined || castVoteFor === "" || userEnteredOtp === undefined || userEnteredOtp.toString().length !== 6) {
+            $scope.updateAadharElements("block", true, undefined, undefined);
+            $scope.updateOtpElements("block", true, undefined, undefined);
+            $scope.updateVoterCardElements("block", true, undefined, undefined);
+            $scope.updateCastVoteElements("block", false, "Voting failed, please try again.", "red");
+            return;
+        }
+
+        var payload = { "AadharNo": aadharNo, "VoterId": voterId, "VoteFor": castVoteFor, "Otp": userEnteredOtp };
+
+        $http({
+            method: 'POST',
+            url: 'api/Votes/CastVote',
+            data: JSON.stringify(payload),
+            headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        })
+        .then(function (response) {
+            if (response.data === "SuccessfullyVoted") {
+                $scope.updateAadharElements("block", true, undefined, undefined);
+                $scope.updateOtpElements("block", true, undefined, undefined);
+                $scope.updateVoterCardElements("block", true, undefined, undefined);
+                $scope.updateCastVoteElements("block", true, "Voting successful.", "green");
+            }
+            else if (response.data === "AlreadyVoted") {
+                $scope.updateAadharElements("block", true, undefined, undefined);
+                $scope.updateOtpElements("block", true, undefined, undefined);
+                $scope.updateVoterCardElements("block", true, undefined, undefined);
+                $scope.updateCastVoteElements("block", true, "Already voted.", "blue");
+            }
+            else {
+                $scope.updateAadharElements("block", true, undefined, undefined);
+                $scope.updateOtpElements("block", true, undefined, undefined);
+                $scope.updateVoterCardElements("block", true, undefined, undefined);
+                $scope.updateCastVoteElements("block", false, "Voting failed, please try again.", "red");
             }
         });
     };
@@ -190,6 +243,24 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }
         if (voterIdLinkColor !== undefined) {
             $scope.VoterIdLinkingColor = voterIdLinkColor;
+        }
+    };
+
+    // Update Vote UI elements.
+    $scope.updateCastVoteElements = function (castVoteDivDisplay, disableCastVoteElements, castVoteMsg, castVoteColor) {
+        if (castVoteDivDisplay !== undefined) {
+            document.getElementById("CastVoteDiv").style.display = castVoteDivDisplay;
+        }
+        if (disableCastVoteElements !== undefined) {
+            document.getElementById("txtCastVote").disabled = disableCastVoteElements;
+            document.getElementById("btnCastVote").disabled = disableCastVoteElements;
+        }
+        if (castVoteMsg !== undefined) {
+            $scope.castVoteMessage = castVoteMsg;
+            console.log(castVoteMsg);
+        }
+        if (castVoteColor !== undefined) {
+            $scope.castVoteColor = castVoteColor;
         }
     };
 }]);
