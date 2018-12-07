@@ -35,6 +35,7 @@
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Dob_Input, userDetails.DOB));
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.FatherName_Input, userDetails.FatherName));
                     sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Gender_Input, userDetails.Gender.ToString()));
+                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.DataAccess.Otp_Input, userDetails.Otp));
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {

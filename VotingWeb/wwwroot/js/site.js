@@ -87,16 +87,17 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
     };
 
     // Link Voter Id to Aadhar.
-    $scope.LinkVoterIdToAadhar = function (aadharNo, voterId, name, dob, fatherName, gender) {
+    $scope.LinkVoterIdToAadhar = function (aadharNo, voterId, name, dob, fatherName, gender, userEnteredOtp) {
         if (aadharNo === undefined || aadharNo.toString().length !== 12 || voterId === undefined || voterId.length !== 10 ||
-            name === undefined || dob === undefined || dob.length !== 10 || fatherName === undefined || gender === undefined) {
+            name === undefined || dob === undefined || dob.length !== 10 || fatherName === undefined || gender === undefined ||
+            userEnteredOtp === undefined || userEnteredOtp.toString().length !== 6) {
             $scope.updateAadharElements("block", true, undefined, undefined);
             $scope.updateOtpElements("block", true, undefined, undefined);
             $scope.updateVoterCardElements("block", false, "Invalid Voter card details.", "red");
             return;
         }
 
-        var payload = { "AadharNo": aadharNo, "VoterId": voterId, "Name": name, "DOB": dob, "FatherName": fatherName, "Gender": gender };
+        var payload = { "AadharNo": aadharNo, "VoterId": voterId, "Name": name, "DOB": dob, "FatherName": fatherName, "Gender": gender, "Otp": userEnteredOtp };
 
         $http({
             method: 'POST',
