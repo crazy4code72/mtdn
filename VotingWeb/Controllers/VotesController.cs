@@ -138,6 +138,9 @@ namespace VotingWeb.Controllers
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
+            IActionResult validationResult = Validator.ValidateAadharNoToSendOtp(aadharNo);
+            if (validationResult != null) return validationResult;
+
             Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
             Uri proxyAddress = GetProxyAddress(serviceName);
             int partitionKey = aadharNo.Sum(c => (int) char.GetNumericValue(c));
@@ -162,6 +165,9 @@ namespace VotingWeb.Controllers
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
+            IActionResult validationResult = Validator.ValidateVerifyOtpData(aadharNo, userEnteredOtp);
+            if (validationResult != null) return validationResult;
+
             Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
             Uri proxyAddress = GetProxyAddress(serviceName);
             int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
@@ -185,6 +191,9 @@ namespace VotingWeb.Controllers
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
+            IActionResult validationResult = Validator.ValidateLinkVoterIdToAadharData(userDetails);
+            if (validationResult != null) return validationResult;
+
             Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
             Uri proxyAddress = GetProxyAddress(serviceName);
             int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
@@ -207,6 +216,9 @@ namespace VotingWeb.Controllers
         [HttpPost("CastVote")]
         public async Task<IActionResult> CastVote([FromBody] UserDetails userDetails)
         {
+            IActionResult validationResult = Validator.ValidateCastVoteData(userDetails);
+            if (validationResult != null) return validationResult;
+
             Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
             Uri proxyAddress = GetProxyAddress(serviceName);
             int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));

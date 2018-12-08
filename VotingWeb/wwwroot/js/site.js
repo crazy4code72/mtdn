@@ -36,7 +36,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     // Submit Aadhar no to send otp to registered contact no and email id.
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
-        if (aadharNo === undefined || aadharNo.toString().length !== 12) {
+        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999) {
             $scope.updateAadharElements("block", false, "Invalid Aadhar No.", "red");
             $scope.updateOtpElements("none", undefined, undefined, undefined);
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
@@ -65,7 +65,9 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     // Verify otp for Aadhar No.
     $scope.VerifyOtp = function (aadharNo, userEnteredOtp) {
-        if (aadharNo === undefined || aadharNo.toString().length !== 12 || userEnteredOtp === undefined || userEnteredOtp.toString().length !== 6) {
+        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999 ||
+            userEnteredOtp === undefined || userEnteredOtp.toString().trim().length !== 6 || parseInt(userEnteredOtp) > 999999 ||
+            parseInt(userEnteredOtp) < 100000) {
             $scope.updateAadharElements("block", false, undefined, undefined);
             $scope.updateOtpElements("block", false, "Incorrect OTP.", "red");
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
@@ -94,9 +96,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     // Link Voter Id to Aadhar.
     $scope.LinkVoterIdToAadhar = function (aadharNo, voterId, name, dob, fatherName, gender, userEnteredOtp) {
-        if (aadharNo === undefined || aadharNo.toString().length !== 12 || voterId === undefined || voterId.length !== 10 ||
-            name === undefined || dob === undefined || dob.length !== 10 || fatherName === undefined || gender === undefined ||
-            userEnteredOtp === undefined || userEnteredOtp.toString().length !== 6) {
+        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999 ||
+            voterId === undefined || voterId.toString().trim().length !== 10 || name === undefined || name.toString().trim() === "" ||
+            dob === undefined || dob.toString().trim().length !== 10 || fatherName === undefined || fatherName.toString().trim() === "" ||
+            gender === undefined || gender.toString().trim() === "" || userEnteredOtp === undefined ||
+            userEnteredOtp.toString().trim().length !== 6 || parseInt(userEnteredOtp) > 999999 || parseInt(userEnteredOtp) < 100000) {
             $scope.updateAadharElements("block", true, undefined, undefined);
             $scope.updateOtpElements("block", true, undefined, undefined);
             $scope.updateVoterCardElements("block", false, "Invalid Voter card details.", "red");
@@ -149,8 +153,10 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
     // Submit Vote along with voter id and other details.
     $scope.CastVote = function (aadharNo, voterId, castVoteFor, userEnteredOtp) {
-        if (aadharNo === undefined || aadharNo.toString().length !== 12 || voterId === undefined || voterId.length !== 10 ||
-            castVoteFor === undefined || castVoteFor === "" || userEnteredOtp === undefined || userEnteredOtp.toString().length !== 6) {
+        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999 ||
+            voterId === undefined || voterId.toString().trim().length !== 10 || castVoteFor === undefined ||
+            castVoteFor.toString().trim() === "" || userEnteredOtp === undefined || userEnteredOtp.toString().trim().length !== 6 ||
+            parseInt(userEnteredOtp) > 999999 || parseInt(userEnteredOtp) < 100000) {
             $scope.updateAadharElements("block", true, undefined, undefined);
             $scope.updateOtpElements("block", true, undefined, undefined);
             $scope.updateVoterCardElements("block", true, undefined, undefined);
@@ -177,7 +183,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, undefined, undefined);
-                $scope.updateCastVoteElements("block", true, "Already voted.", "blue");
+                $scope.updateCastVoteElements("block", true, "You have already voted.", "blue");
             }
             else {
                 $scope.updateAadharElements("block", true, undefined, undefined);
@@ -257,6 +263,9 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }
         if (castVoteMsg !== undefined) {
             $scope.castVoteMessage = castVoteMsg;
+            if (castVoteMsg !== "Voting successful.") {
+                document.getElementById("txtCastVote").value = "";
+            }
             console.log(castVoteMsg);
         }
         if (castVoteColor !== undefined) {

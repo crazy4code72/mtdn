@@ -113,14 +113,21 @@
         /// </summary>
         private static async Task SendOtpToEmailId(string emailId, string otp)
         {
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("aadhar@gov.in", "Aadhar");
-            const string subject = "OTP for Aadhar verification";
-            var to = new EmailAddress(emailId, string.Empty);
-            var htmlContent = string.Empty;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, otp, htmlContent);
-            await client.SendEmailAsync(msg);
+            try
+            {
+                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("aadhar@gov.in", "Aadhar");
+                const string subject = "OTP for Aadhar verification";
+                var to = new EmailAddress(emailId, string.Empty);
+                var htmlContent = string.Empty;
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, otp, htmlContent);
+                await client.SendEmailAsync(msg);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }
