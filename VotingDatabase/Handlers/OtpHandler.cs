@@ -42,7 +42,7 @@
             var otp = randomizer.Next(100000, 999999);
             var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
 
-            var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar. It will be invalid after 10 minutes.");
+            var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar verification.");
 
             if (contactDetails.ContactNo != null)
             {
