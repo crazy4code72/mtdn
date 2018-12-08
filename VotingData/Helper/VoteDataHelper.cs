@@ -28,15 +28,15 @@
             this.stateManager = stateManager;
         }
 
-
         /// <summary>
         /// Check if key value pair exist in state.
         /// </summary>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="name">Name</param>
+        /// <param name="ignoreValueCheck">Ignore checking of value, check only if key exists or not</param>
         /// <returns>Bool</returns>
-        internal async Task<bool> CheckIfKeyValuePairExistInState(string key, string value, string name)
+        internal async Task<bool> CheckIfKeyValuePairExistInState(string key, string value, string name, bool ignoreValueCheck = false)
         {
             CancellationToken ct = new CancellationToken();
             IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(name);
@@ -50,9 +50,9 @@
                 while (await enumerator.MoveNextAsync(ct))
                 {
                     keyValuePair = enumerator.Current;
-                    if (keyValuePair.Key.Equals(key) && keyValuePair.Value.Equals(value))
+                    if (keyValuePair.Key.Equals(key))
                     {
-                        return true;
+                        return ignoreValueCheck || keyValuePair.Value.Equals(value);
                     }
                 }
             }

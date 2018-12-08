@@ -218,7 +218,7 @@
             userDetails.EventType = Enums.EventType.CastVote;
 
             // Check in state of VotingResult.
-            var voterIdHasVotedCandidateInState = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
+            var voterIdHasVotedCandidateInState = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.VoterId, userDetails.VoteFor, Enums.StateName.VoterIdVoteForPair.ToString(), true);
             if (voterIdHasVotedCandidateInState)
             {
                 return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.AlreadyVoted };
@@ -236,7 +236,7 @@
             var kafkaTopicProduceStatus = await voteDataHelper.ProduceToKafkaTopic(userDetails);
             if (kafkaTopicProduceStatus.Equals(Enums.ResponseMessageCode.Success))
             {
-                bool votingResultUpdated = await voteDataHelper.UpsertKeyValuePairInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
+                bool votingResultUpdated = await voteDataHelper.UpsertKeyValuePairInState(userDetails.VoterId, userDetails.VoteFor, Enums.StateName.VoterIdVoteForPair.ToString());
                 if (votingResultUpdated)
                 {
                     return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.SuccessfullyVoted };
