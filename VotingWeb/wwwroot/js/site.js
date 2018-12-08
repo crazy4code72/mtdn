@@ -34,6 +34,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         });
     };
 
+    // Start fresh again.
+    $scope.StartFresh = function() {
+        window.location.reload();
+    };
+
     // Submit Aadhar no to send otp to registered contact no and email id.
     $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
         if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999) {

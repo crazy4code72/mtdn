@@ -8,3 +8,9 @@
     width: 460px;
     padding-top: 8px;
 }
+
+.startFresh {
+    position: absolute;
+    left: 50%;
+    margin-left: -70px;
+}
