@@ -1,18 +1,12 @@
-﻿using System.Net.Http;
-
-namespace VotingData.Controllers
+﻿namespace VotingData.Controllers
 {
-    using Confluent.Kafka.Serialization;
     using global::VotingData.Handlers;
-    using global::VotingData.Kafka;
+    using global::VotingData.Helper;
     using global::VotingData.Model;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.ServiceFabric.Data;
     using Microsoft.ServiceFabric.Data.Collections;
-    using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using VotingDatabase;
@@ -31,9 +25,14 @@ namespace VotingData.Controllers
         private readonly VotingDatabaseParameters votingDatabaseParameters;
 
         /// <summary>
+        /// Vote data helper.
+        /// </summary>
+        private readonly VoteDataHelper voteDataHelper;
+
+        /// <summary>
         /// Otp verification handler.
         /// </summary>
-        private IOtpVerificationHandler otpVerificationHandler;
+        private static readonly IOtpVerificationHandler otpVerificationHandler = new OtpVerificationHandler();
 
         /// <summary>
         /// Voter id link handler.
@@ -51,6 +50,7 @@ namespace VotingData.Controllers
                                   IOtpVerificationHandler otpVerificationHandler*/)
         {
             this.stateManager = stateManager;
+            this.voteDataHelper = new VoteDataHelper(stateManager);
             //this.votingDatabaseParameters = votingDatabaseParameters;
             //this.otpVerificationHandler = otpVerificationHandler;
         }
@@ -128,7 +128,7 @@ namespace VotingData.Controllers
                 AadharNo = aadharNo,
                 EventType = Enums.EventType.SendOtp
             };
-            var kafkaTopicProduceStatus = await ProduceToKafkaTopic(userDetails);
+            var kafkaTopicProduceStatus = await voteDataHelper.ProduceToKafkaTopic(userDetails);
             return new ContentResult { StatusCode = (int)kafkaTopicProduceStatus };
         }
 
@@ -142,15 +142,11 @@ namespace VotingData.Controllers
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
-            if (this.otpVerificationHandler == null)
-            {
-                this.otpVerificationHandler = new OtpVerificationHandler();
-            }
-            var otpVerifiedFromDb = this.otpVerificationHandler.VerifyOtp(aadharNo, userEnteredOtp);
+            var otpVerifiedFromDb = otpVerificationHandler.VerifyOtp(aadharNo, userEnteredOtp);
             bool otpUpdatedInState = false;
             if (otpVerifiedFromDb)
             {
-                otpUpdatedInState = await UpsertKeyValuePairInState(aadharNo, userEnteredOtp, Enums.StateName.AadharNoOtpPair.ToString());
+                otpUpdatedInState = await voteDataHelper.UpsertKeyValuePairInState(aadharNo, userEnteredOtp, Enums.StateName.AadharNoOtpPair.ToString());
             }
 
             var statusCode = otpVerifiedFromDb && otpUpdatedInState ? (int)Enums.ResponseMessageCode.Success : (int)Enums.ResponseMessageCode.Failure;
@@ -170,21 +166,21 @@ namespace VotingData.Controllers
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
-            var voterIdLinkedFoundInState = await CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
+            var voterIdLinkedFoundInState = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
             if (voterIdLinkedFoundInState)
             {
                 return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.AlreadyLinked };
             }
 
             // Check state to verify if Otp is correct.
-            var otpCorrectInState = await CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.Otp.ToString(), Enums.StateName.AadharNoOtpPair.ToString());
+            var otpCorrectInState = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.Otp.ToString(), Enums.StateName.AadharNoOtpPair.ToString());
             if (otpCorrectInState)
             {
                 if (this.voterIdLinkHandler == null)
                 {
                     this.voterIdLinkHandler = new VoterIdLinkHandler();
                 }
-                var voterIdLinkingStatus = this.voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
+                var voterIdLinkingStatus = voterIdLinkHandler.LinkVoterIdToAadhar(userDetails);
                 int? statusCode;
                 switch (voterIdLinkingStatus)
                 {
@@ -197,7 +193,7 @@ namespace VotingData.Controllers
 
                 if (statusCode.Equals((int)Enums.VoterIdLinkingStatus.SuccessfullyLinked))
                 {
-                    await UpsertKeyValuePairInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
+                    await voteDataHelper.UpsertKeyValuePairInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
                 }
 
                 return new ContentResult { StatusCode = statusCode };
@@ -222,25 +218,25 @@ namespace VotingData.Controllers
             userDetails.EventType = Enums.EventType.CastVote;
 
             // Check in state of VotingResult.
-            var voterIdHasVotedCandidateInState = await CheckIfKeyValuePairExistInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
+            var voterIdHasVotedCandidateInState = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
             if (voterIdHasVotedCandidateInState)
             {
                 return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.AlreadyVoted };
             }
 
             // Check state of Voting and Otp to verify Aadhar No, Voter Id and Otp.
-            var isAadharAndVoterIdValid = await CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
-            var isAadharAndOtpValid = await CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.Otp.ToString(), Enums.StateName.AadharNoOtpPair.ToString());
+            var isAadharAndVoterIdValid = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.VoterId, Enums.StateName.AadharNoVoterIdPair.ToString());
+            var isAadharAndOtpValid = await voteDataHelper.CheckIfKeyValuePairExistInState(userDetails.AadharNo, userDetails.Otp.ToString(), Enums.StateName.AadharNoOtpPair.ToString());
             if (!isAadharAndVoterIdValid || !isAadharAndOtpValid)
             {
                 return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.VotingFailed };
             }
 
             // Produce to kafka topic
-            var kafkaTopicProduceStatus = await ProduceToKafkaTopic(userDetails);
+            var kafkaTopicProduceStatus = await voteDataHelper.ProduceToKafkaTopic(userDetails);
             if (kafkaTopicProduceStatus.Equals(Enums.ResponseMessageCode.Success))
             {
-                bool votingResultUpdated = await UpsertKeyValuePairInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
+                bool votingResultUpdated = await voteDataHelper.UpsertKeyValuePairInState(userDetails.VoterId, bool.TrueString, Enums.StateName.VoterIdVoteForPair.ToString());
                 if (votingResultUpdated)
                 {
                     return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.SuccessfullyVoted };
@@ -249,100 +245,6 @@ namespace VotingData.Controllers
 
             // Return voting failed.
             return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.VotingFailed };
-        }
-
-        /// <summary>
-        /// Check if key value pair exist in state.
-        /// </summary>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
-        /// <param name="name">Name</param>
-        /// <returns>Bool</returns>
-        private async Task<bool> CheckIfKeyValuePairExistInState(string key, string value, string name)
-        {
-            CancellationToken ct = new CancellationToken();
-            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(name);
-
-            using (ITransaction tx = this.stateManager.CreateTransaction())
-            {
-                IAsyncEnumerable<KeyValuePair<string, string>> list = await votesDictionary.CreateEnumerableAsync(tx);
-                IAsyncEnumerator<KeyValuePair<string, string>> enumerator = list.GetAsyncEnumerator();
-
-                KeyValuePair<string, string> keyValuePair;
-                while (await enumerator.MoveNextAsync(ct))
-                {
-                    keyValuePair = enumerator.Current;
-                    if (keyValuePair.Key.Equals(key) && keyValuePair.Value.Equals(value))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Update key value pair in state.
-        /// </summary>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
-        /// <param name="name">Name</param>
-        /// <returns>bool</returns>
-        private async Task<bool> UpsertKeyValuePairInState(string key, string value, string name)
-        {
-            try
-            {
-                IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(name);
-
-                using (ITransaction tx = this.stateManager.CreateTransaction())
-                {
-                    await votesDictionary.AddOrUpdateAsync(tx, key, value, (oldKey, oldValue) => value);
-                    await tx.CommitAsync();
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Produce to kafka topic.
-        /// </summary>
-        /// <param name="userDetails">User details</param>
-        /// <returns>Action result</returns>
-        private async Task<Enums.ResponseMessageCode> ProduceToKafkaTopic(UserDetails userDetails)
-        {
-            //TODO: Read these values from config.
-            var config = new KafkaProducerProperties
-            {
-                ServerAddresses = new List<string> { "127.0.0.1:9092" },
-                TopicName = "Voting",
-                CompressionType = KafkaProducerCompressionTypes.Snappy
-            };
-
-            using (KafkaProducer<string, string> producer = new KafkaProducer<string, string>(config, new StringSerializer(Encoding.UTF8), new StringSerializer(Encoding.UTF8)))
-            {
-                List<Task> tasks = new List<Task>();
-                try
-                {
-                    tasks.Add(producer.ProduceAsync(userDetails.AadharNo, JsonConvert.SerializeObject(userDetails)));
-
-                    if (tasks.Count == 100)
-                    {
-                        await Task.WhenAll(tasks);
-                    }
-                }
-                catch (Exception)
-                {
-                    return Enums.ResponseMessageCode.Failure;
-                }
-
-                await Task.WhenAll(tasks);
-            }
-
-            return Enums.ResponseMessageCode.Success;
         }
     }
 }
