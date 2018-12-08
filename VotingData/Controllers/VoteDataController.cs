@@ -56,24 +56,59 @@
         }
 
         // GET api/VoteData
+//        [HttpGet]
+//        public async Task<IActionResult> Get()
+//        {
+//            CancellationToken ct = new CancellationToken();
+//
+//            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
+//
+//            using (ITransaction tx = this.stateManager.CreateTransaction())
+//            {
+//                IAsyncEnumerable<KeyValuePair<string, int>> list = await votesDictionary.CreateEnumerableAsync(tx);
+//
+//                IAsyncEnumerator<KeyValuePair<string, int>> enumerator = list.GetAsyncEnumerator();
+//
+//                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+//
+//                while (await enumerator.MoveNextAsync(ct))
+//                {
+//                    result.Add(enumerator.Current);
+//                }
+//
+//                return Json(result);
+//            }
+//        }
+
+        // GET api/VoteData
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             CancellationToken ct = new CancellationToken();
-
-            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
+            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(Enums.StateName.VoterIdVoteForPair.ToString());
 
             using (ITransaction tx = this.stateManager.CreateTransaction())
             {
-                IAsyncEnumerable<KeyValuePair<string, int>> list = await votesDictionary.CreateEnumerableAsync(tx);
-
-                IAsyncEnumerator<KeyValuePair<string, int>> enumerator = list.GetAsyncEnumerator();
-
-                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+                IAsyncEnumerable<KeyValuePair<string, string>> list = await votesDictionary.CreateEnumerableAsync(tx);
+                IAsyncEnumerator<KeyValuePair<string, string>> enumerator = list.GetAsyncEnumerator();
+                Dictionary<string, int> dictionary = new Dictionary<string, int>();
 
                 while (await enumerator.MoveNextAsync(ct))
                 {
-                    result.Add(enumerator.Current);
+                    if (dictionary.ContainsKey(enumerator.Current.Value))
+                    {
+                        dictionary[enumerator.Current.Value] = dictionary[enumerator.Current.Value] + 1;
+                    }
+                    else
+                    {
+                        dictionary[enumerator.Current.Value] = 1;
+                    }
+                }
+
+                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+                foreach (KeyValuePair<string, int> keyValuePair in dictionary)
+                {
+                    result.Add(new KeyValuePair<string, int>(keyValuePair.Key, keyValuePair.Value));
                 }
 
                 return Json(result);

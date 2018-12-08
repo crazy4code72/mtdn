@@ -36,6 +36,36 @@ namespace VotingWeb.Controllers
         }
 
         // GET: api/Votes
+//        [HttpGet("")]
+//        public async Task<IActionResult> Get()
+//        {
+//            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+//            Uri proxyAddress = GetProxyAddress(serviceName);
+//
+//            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+//
+//            List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+//
+//            foreach (Partition partition in partitions)
+//            {
+//                string proxyUrl =
+//                    $"{proxyAddress}/api/VoteData?PartitionKey={((Int64RangePartitionInformation) partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
+//
+//                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
+//                {
+//                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+//                    {
+//                        continue;
+//                    }
+//
+//                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(await response.Content.ReadAsStringAsync()));
+//                }
+//            }
+//
+//            return Json(result);
+//        }
+
+        // GET: api/Votes
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
@@ -43,8 +73,7 @@ namespace VotingWeb.Controllers
             Uri proxyAddress = GetProxyAddress(serviceName);
 
             ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
-
-            List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
 
             foreach (Partition partition in partitions)
             {
@@ -58,7 +87,7 @@ namespace VotingWeb.Controllers
                         continue;
                     }
 
-                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(await response.Content.ReadAsStringAsync()));
+                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(await response.Content.ReadAsStringAsync()));
                 }
             }
 

@@ -131,6 +131,24 @@
             </button>
         </div>
         <br/><br/><br/>
+
+        <div class="row" style="display: block">
+            <div class="col-xs-8 col-xs-offset-2">
+                <div class="row top-buffer" ng-repeat="vote in votes.data">
+                    <div class="col-xs-8">
+                        <button class="btn btn-success text-left btn-block">
+                            <span class="pull-left">
+                                {{vote.key}}
+                            </span>
+                            <span class="badge pull-right">
+                                {{vote.value}} Votes
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
         @*
         <div class="row" style="display: none">
             <div class="col-xs-8 col-xs-offset-2">
