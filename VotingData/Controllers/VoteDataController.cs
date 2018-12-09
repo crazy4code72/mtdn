@@ -1,4 +1,6 @@
-﻿namespace VotingData.Controllers
+﻿using System.Linq;
+
+namespace VotingData.Controllers
 {
     using global::VotingData.Handlers;
     using global::VotingData.Helper;
@@ -139,12 +141,7 @@
                     }
                 }
 
-                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
-                foreach (KeyValuePair<string, int> keyValuePair in dictionary)
-                {
-                    result.Add(new KeyValuePair<string, int>(keyValuePair.Key, keyValuePair.Value));
-                }
-
+                var result = dictionary.OrderByDescending(d => d.Value);
                 return Json(result);
             }
         }
