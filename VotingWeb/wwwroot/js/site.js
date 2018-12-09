@@ -7,7 +7,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         $scope.FetchLiveVotingResult();
         var interval = setInterval(function () {
             $scope.FetchLiveVotingResult();
-        }, 5000);
+        }, 7000);
     };
 
     $scope.FetchLiveVotingResult = function() {
@@ -193,6 +193,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, undefined, undefined);
                 $scope.updateCastVoteElements("block", true, "Voting successful.", "green");
+                $scope.FetchLiveVotingResult();
             }
             else if (response.data === "AlreadyVoted") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
