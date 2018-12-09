@@ -3,7 +3,14 @@ app.run(function () { });
 
 app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeout', function ($rootScope, $scope, $http, $timeout) {
 
+    $scope.candidates = ["Bhartiya Janata Party", "Aam Aadmi Party", "Congress"];
+
     $scope.LiveVotingResult = function () {
+        $scope.updateAadharElements("none", undefined, undefined, undefined);
+        $scope.updateOtpElements("none", undefined, undefined, undefined);
+        $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+        $scope.updateCastVoteElements("none", undefined, undefined, undefined);
+
         $scope.FetchLiveVotingResult();
         var interval = setInterval(function () {
             $scope.FetchLiveVotingResult();
@@ -193,7 +200,6 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, undefined, undefined);
                 $scope.updateCastVoteElements("block", true, "Voting successful.", "green");
-                $scope.FetchLiveVotingResult();
             }
             else if (response.data === "AlreadyVoted") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
@@ -274,14 +280,10 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             document.getElementById("CastVoteDiv").style.display = castVoteDivDisplay;
         }
         if (disableCastVoteElements !== undefined) {
-            document.getElementById("txtCastVote").disabled = disableCastVoteElements;
-            document.getElementById("btnCastVote").disabled = disableCastVoteElements;
+            document.getElementsByClassName("candidates").disabled = disableCastVoteElements;
         }
         if (castVoteMsg !== undefined) {
             $scope.castVoteMessage = castVoteMsg;
-            if (castVoteMsg !== "Voting successful.") {
-                document.getElementById("txtCastVote").value = "";
-            }
             console.log(castVoteMsg);
         }
         if (castVoteColor !== undefined) {

@@ -103,22 +103,23 @@
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <label>Choose your candidate.</label>
+                        <label>Click on candidate name to vote.</label>
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtCastVote" type="text" class="form-control" placeholder="Enter candidate name" ng-model="castVoteFor" required="required" />
+                        <div class="row top-buffer" ng-repeat="candidate in candidates">
+                            <div class="col-xs-12">
+                                <button class="btn btn-warning text-left btn-block candidates" ng-click="CastVote(aadharNo, voterId, candidate, userEnteredOtp)">
+                                    <span class="pull-left">
+                                        {{candidate}}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xs-6 form-group">
-                        <input ng-model="castVoteMessage" disabled="disabled" class="labels" style="color:{{castVoteColor}};" />
-                    </div>
-                </div>
-                <div class="col-xs-12 center-block">
-                    <div class="col-xs-6 form-group">
-                        <button id="btnCastVote" class="btn btn-primary" ng-click="CastVote(aadharNo, voterId, castVoteFor, userEnteredOtp)">
-                            Submit Vote
-                        </button>
+                        <input ng-model="castVoteMessage" disabled="disabled" class="labels" style="margin-top:8px;color:{{castVoteColor}};" />
                     </div>
                 </div>
             </div>
