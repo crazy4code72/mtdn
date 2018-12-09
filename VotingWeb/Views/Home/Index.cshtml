@@ -129,11 +129,14 @@
             <button id="btnStartFresh" class="btn btn-success" ng-click="StartFresh()">
                 Start Fresh Again
             </button>
+            <button id="btnLiveVotingResult" class="btn btn-success" style="margin-left: 70px;" ng-click="LiveVotingResult()">
+                See Live Voting Result
+            </button>
         </div>
         <br/><br/><br/>
 
-        <div class="row" style="display: block">
-            <div class="col-xs-8 col-xs-offset-2">
+        <div id="LiveVotingResult" class="row" style="display: none">
+            <div class="col-xs-12 col-xs-offset-2">
                 <div class="row top-buffer" ng-repeat="vote in votes.data">
                     <div class="col-xs-8">
                         <button class="btn btn-success text-left btn-block">

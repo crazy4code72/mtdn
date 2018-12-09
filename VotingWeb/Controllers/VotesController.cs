@@ -36,105 +36,76 @@ namespace VotingWeb.Controllers
         }
 
         // GET: api/Votes
-//        [HttpGet("")]
-//        public async Task<IActionResult> Get()
+        //        [HttpGet("")]
+        //        public async Task<IActionResult> Get()
+        //        {
+        //            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+        //            Uri proxyAddress = GetProxyAddress(serviceName);
+        //
+        //            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+        //
+        //            List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+        //
+        //            foreach (Partition partition in partitions)
+        //            {
+        //                string proxyUrl =
+        //                    $"{proxyAddress}/api/VoteData?PartitionKey={((Int64RangePartitionInformation) partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
+        //
+        //                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
+        //                {
+        //                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        //                    {
+        //                        continue;
+        //                    }
+        //
+        //                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(await response.Content.ReadAsStringAsync()));
+        //                }
+        //            }
+        //
+        //            return Json(result);
+        //        }
+
+        // PUT: api/Votes/name
+//        [HttpPut("{name}")]
+//        public async Task<IActionResult> Put(string name)
 //        {
 //            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
 //            Uri proxyAddress = GetProxyAddress(serviceName);
+//            long partitionKey = GetPartitionKey(name);
+//            string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 //
-//            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+//            StringContent putContent = new StringContent($"{{ 'name' : '{name}' }}", Encoding.UTF8, "application/json");
+//            putContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 //
-//            List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
-//
-//            foreach (Partition partition in partitions)
+//            using (HttpResponseMessage response = await httpClient.PutAsync(proxyUrl, putContent))
 //            {
-//                string proxyUrl =
-//                    $"{proxyAddress}/api/VoteData?PartitionKey={((Int64RangePartitionInformation) partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
-//
-//                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
+//                return new ContentResult
 //                {
-//                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
-//                    {
-//                        continue;
-//                    }
+//                    StatusCode = (int) response.StatusCode,
+//                    Content = await response.Content.ReadAsStringAsync()
+//                };
+//            }
+//        }
+
+        // DELETE: api/Votes/name
+//        [HttpDelete("{name}")]
+//        public async Task<IActionResult> Delete(string name)
+//        {
+//            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+//            Uri proxyAddress = GetProxyAddress(serviceName);
+//            long partitionKey = GetPartitionKey(name);
+//            string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 //
-//                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(await response.Content.ReadAsStringAsync()));
+//            using (HttpResponseMessage response = await httpClient.DeleteAsync(proxyUrl))
+//            {
+//                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+//                {
+//                    return StatusCode((int) response.StatusCode);
 //                }
 //            }
 //
-//            return Json(result);
+//            return new OkResult();
 //        }
-
-        // GET: api/Votes
-        [HttpGet("")]
-        public async Task<IActionResult> Get()
-        {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-
-            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
-            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
-
-            foreach (Partition partition in partitions)
-            {
-                string proxyUrl =
-                    $"{proxyAddress}/api/VoteData?PartitionKey={((Int64RangePartitionInformation) partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
-
-                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
-                {
-                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        continue;
-                    }
-
-                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(await response.Content.ReadAsStringAsync()));
-                }
-            }
-
-            return Json(result);
-        }
-
-        // PUT: api/Votes/name
-        [HttpPut("{name}")]
-        public async Task<IActionResult> Put(string name)
-        {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            long partitionKey = GetPartitionKey(name);
-            string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            StringContent putContent = new StringContent($"{{ 'name' : '{name}' }}", Encoding.UTF8, "application/json");
-            putContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            using (HttpResponseMessage response = await httpClient.PutAsync(proxyUrl, putContent))
-            {
-                return new ContentResult
-                {
-                    StatusCode = (int) response.StatusCode,
-                    Content = await response.Content.ReadAsStringAsync()
-                };
-            }
-        }
-
-        // DELETE: api/Votes/name
-        [HttpDelete("{name}")]
-        public async Task<IActionResult> Delete(string name)
-        {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            long partitionKey = GetPartitionKey(name);
-            string proxyUrl = $"{proxyAddress}/api/VoteData/{name}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            using (HttpResponseMessage response = await httpClient.DeleteAsync(proxyUrl))
-            {
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    return StatusCode((int) response.StatusCode);
-                }
-            }
-
-            return new OkResult();
-        }
 
         /// <summary>
         /// Constructs a reverse proxy URL for a given service.
@@ -156,6 +127,35 @@ namespace VotingWeb.Controllers
         private long GetPartitionKey(string name)
         {
             return Char.ToUpper(name.First()) - 'A';
+        }
+
+        // GET: api/Votes/LiveVotingResult
+        [HttpGet("LiveVotingResult")]
+        public async Task<IActionResult> Get()
+        {
+            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+            Uri proxyAddress = GetProxyAddress(serviceName);
+
+            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
+
+            foreach (Partition partition in partitions)
+            {
+                string proxyUrl =
+                    $"{proxyAddress}/api/VoteData/LiveVotingResult?PartitionKey={((Int64RangePartitionInformation)partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
+
+                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
+                {
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        continue;
+                    }
+
+                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(await response.Content.ReadAsStringAsync()));
+                }
+            }
+
+            return Json(result);
         }
 
         /// <summary>

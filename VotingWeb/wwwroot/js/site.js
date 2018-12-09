@@ -2,37 +2,47 @@
 app.run(function () { });
 
 app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeout', function ($rootScope, $scope, $http, $timeout) {
-    // Refresh the webpage.
-    $scope.refresh = function () {
-        $http.get('api/Votes?c=' + new Date().getTime())
-            .then(function (data, status) {
-                $scope.votes = data;
-            }, function (data, status) {
-                $scope.votes = undefined;
+
+    $scope.LiveVotingResult = function () {
+        $scope.FetchLiveVotingResult();
+        var interval = setInterval(function () {
+            $scope.FetchLiveVotingResult();
+        }, 5000);
+    };
+
+    $scope.FetchLiveVotingResult = function() {
+        $http.get('api/Votes/LiveVotingResult')
+            .then(function(response) {
+                if (response === null || response === undefined || response.data.length === 0) {
+                    $scope.votes = { "data": [{ key: "No vote casted for any candidate", value: "0" }] };
+                } else {
+                    $scope.votes = response;
+                }
+                document.getElementById("LiveVotingResult").style.display = "block";
             });
     };
 
     // Delete the vote.
-    $scope.remove = function (item) {
-        $http.delete('api/Votes/' + item)
-            .then(function(data, status) {
-                $scope.refresh();
-            });
-    };
+//    $scope.remove = function (item) {
+//        $http.delete('api/Votes/' + item)
+//            .then(function(data, status) {
+//                $scope.refresh();
+//            });
+//    };
 
     // Add the vote.
-    $scope.add = function (item) {
-        var fd = new FormData();
-        fd.append('item', item);
-        $http.put('api/Votes/' + item, fd, {
-            transformRequest: angular.identity,
-            headers: { 'Content-Type': undefined }
-        })
-        .then(function (data, status) {
-            $scope.refresh();
-            $scope.item = undefined;
-        });
-    };
+//    $scope.add = function (item) {
+//        var fd = new FormData();
+//        fd.append('item', item);
+//        $http.put('api/Votes/' + item, fd, {
+//            transformRequest: angular.identity,
+//            headers: { 'Content-Type': undefined }
+//        })
+//        .then(function (data, status) {
+//            $scope.refresh();
+//            $scope.item = undefined;
+//        });
+//    };
 
     // Start fresh again.
     $scope.StartFresh = function() {

@@ -56,32 +56,66 @@
         }
 
         // GET api/VoteData
-//        [HttpGet]
-//        public async Task<IActionResult> Get()
-//        {
-//            CancellationToken ct = new CancellationToken();
-//
-//            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
-//
-//            using (ITransaction tx = this.stateManager.CreateTransaction())
-//            {
-//                IAsyncEnumerable<KeyValuePair<string, int>> list = await votesDictionary.CreateEnumerableAsync(tx);
-//
-//                IAsyncEnumerator<KeyValuePair<string, int>> enumerator = list.GetAsyncEnumerator();
-//
-//                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
-//
-//                while (await enumerator.MoveNextAsync(ct))
-//                {
-//                    result.Add(enumerator.Current);
-//                }
-//
-//                return Json(result);
-//            }
-//        }
+        //        [HttpGet]
+        //        public async Task<IActionResult> Get()
+        //        {
+        //            CancellationToken ct = new CancellationToken();
+        //
+        //            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
+        //
+        //            using (ITransaction tx = this.stateManager.CreateTransaction())
+        //            {
+        //                IAsyncEnumerable<KeyValuePair<string, int>> list = await votesDictionary.CreateEnumerableAsync(tx);
+        //
+        //                IAsyncEnumerator<KeyValuePair<string, int>> enumerator = list.GetAsyncEnumerator();
+        //
+        //                List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+        //
+        //                while (await enumerator.MoveNextAsync(ct))
+        //                {
+        //                    result.Add(enumerator.Current);
+        //                }
+        //
+        //                return Json(result);
+        //            }
+        //        }
+
+        // PUT api/VoteData/name
+        //        [HttpPut("{name}")]
+        //        public async Task<IActionResult> Put(string name)
+        //        {
+        //            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
+        //
+        //            using (ITransaction tx = this.stateManager.CreateTransaction())
+        //            {
+        //                await votesDictionary.AddOrUpdateAsync(tx, name, 1, (key, oldValue) => oldValue + 1);
+        //                await tx.CommitAsync();
+        //            }
+        //
+        //            return new OkResult();
+        //        }
+        //
+        //        // DELETE api/VoteData/name
+        //        [HttpDelete("{name}")]
+        //        public async Task<IActionResult> Delete(string name)
+        //        {
+        //            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
+        //
+        //            using (ITransaction tx = this.stateManager.CreateTransaction())
+        //            {
+        //                if (await votesDictionary.ContainsKeyAsync(tx, name))
+        //                {
+        //                    await votesDictionary.TryRemoveAsync(tx, name);
+        //                    await tx.CommitAsync();
+        //                    return new OkResult();
+        //                }
+        //
+        //                return new NotFoundResult();
+        //            }
+        //        }
 
         // GET api/VoteData
-        [HttpGet]
+        [HttpGet("LiveVotingResult")]
         public async Task<IActionResult> Get()
         {
             CancellationToken ct = new CancellationToken();
@@ -112,40 +146,6 @@
                 }
 
                 return Json(result);
-            }
-        }
-
-        // PUT api/VoteData/name
-        [HttpPut("{name}")]
-        public async Task<IActionResult> Put(string name)
-        {
-            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
-
-            using (ITransaction tx = this.stateManager.CreateTransaction())
-            {
-                await votesDictionary.AddOrUpdateAsync(tx, name, 1, (key, oldValue) => oldValue + 1);
-                await tx.CommitAsync();
-            }
-
-            return new OkResult();
-        }
-
-        // DELETE api/VoteData/name
-        [HttpDelete("{name}")]
-        public async Task<IActionResult> Delete(string name)
-        {
-            IReliableDictionary<string, int> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, int>>("counts");
-
-            using (ITransaction tx = this.stateManager.CreateTransaction())
-            {
-                if (await votesDictionary.ContainsKeyAsync(tx, name))
-                {
-                    await votesDictionary.TryRemoveAsync(tx, name);
-                    await tx.CommitAsync();
-                    return new OkResult();
-                }
-
-                return new NotFoundResult();
             }
         }
 
