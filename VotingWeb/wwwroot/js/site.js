@@ -219,7 +219,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, undefined, undefined);
-                $scope.updateCastVoteElements("block", true, "You have already voted.", "blue");
+                $scope.updateCastVoteElements("block", true, "You have already voted.", "red");
             }
             else {
                 $scope.updateAadharElements("block", true, undefined, undefined);

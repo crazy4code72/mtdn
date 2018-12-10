@@ -3,6 +3,7 @@
     using global::VotingWeb.Model;
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Validator.
@@ -85,6 +86,7 @@
             if (string.IsNullOrWhiteSpace(userDetails.AadharNo) || !userDetails.AadharNo.Trim().Length.Equals(12) || aadharResult.Equals(0) ||
                 string.IsNullOrWhiteSpace(userDetails.VoterId) || !userDetails.VoterId.Trim().Length.Equals(10) ||
                 string.IsNullOrWhiteSpace(userDetails.VoteFor) ||
+                !ConfigFileReader.GetConfigFromJsonFile()["Candidates"].Split('#').ToList().Contains(userDetails.VoteFor) ||
                 userDetails.Otp.Equals(null) || userDetails.Otp < 100000 || userDetails.Otp > 999999)
             {
                 return new ContentResult
