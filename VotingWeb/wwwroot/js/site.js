@@ -3,7 +3,7 @@ app.run(function () { });
 
 app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeout', function ($rootScope, $scope, $http, $timeout) {
 
-    $scope.candidates = ["Bhartiya Janata Party", "Aam Aadmi Party", "Congress"];
+    $scope.candidates = [];
 
     $scope.LiveVotingResult = function () {
         $scope.updateAadharElements("none", undefined, undefined, undefined);
@@ -139,25 +139,38 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             headers: { 'Content-Type': 'application/json; charset=utf-8' }
         })
         .then(function (response) {
-            if (response.data === "SuccessfullyLinked") {
+            var splitResponse = response.data.split(':');
+            if (splitResponse[0] === "SuccessfullyLinked") {
+                if (splitResponse[1] !== "") {
+                    $scope.candidates = splitResponse[1].split('#');
+                } else {
+                    $scope.candidates = [];
+                }
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id successfully linked to Aadhar.", "green");
                 $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
-            else if (response.data === "AlreadyLinked") {
+            else if (splitResponse[0] === "AlreadyLinked") {
+                if (splitResponse[1] !== "") {
+                    $scope.candidates = splitResponse[1].split('#');
+                } else {
+                    $scope.candidates = [];
+                }
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id is already linked to Aadhar.", "blue");
                 $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (response.data === "LinkingFailed") {
+                $scope.candidates = [];
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Incorrect Voter Id, failed to link Voter Id to Aadhar.", "red");
                 $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
             else if (response.data === "Unauthorized") {
+                $scope.candidates = [];
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Unauthorized user, failed to link Voter Id to Aadhar.", "red");
@@ -165,6 +178,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             }
             else
             {
+                $scope.candidates = [];
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", false, "Something went wrong, please try again.", "red");

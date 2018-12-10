@@ -1,5 +1,3 @@
-using VotingWeb.Helper;
-
 namespace VotingWeb.Controllers
 {
     using global::VotingWeb.Model;
@@ -14,6 +12,7 @@ namespace VotingWeb.Controllers
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using global::VotingWeb.Helper;
 
     [Produces("application/json")]
     [Route("api/[controller]")]
@@ -133,29 +132,36 @@ namespace VotingWeb.Controllers
         [HttpGet("LiveVotingResult")]
         public async Task<IActionResult> Get()
         {
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-
-            ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
-            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
-
-            foreach (Partition partition in partitions)
+            try
             {
-                string proxyUrl =
-                    $"{proxyAddress}/api/VoteData/LiveVotingResult?PartitionKey={((Int64RangePartitionInformation)partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
+                Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+                Uri proxyAddress = GetProxyAddress(serviceName);
 
-                using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
+                ServicePartitionList partitions = await fabricClient.QueryManager.GetPartitionListAsync(serviceName);
+                List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
+
+                foreach (Partition partition in partitions)
                 {
-                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                    string proxyUrl =
+                        $"{proxyAddress}/api/VoteData/LiveVotingResult?PartitionKey={((Int64RangePartitionInformation)partition.PartitionInformation).LowKey}&PartitionKind=Int64Range";
+
+                    using (HttpResponseMessage response = await httpClient.GetAsync(proxyUrl))
                     {
-                        continue;
+                        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            continue;
+                        }
+
+                        result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(await response.Content.ReadAsStringAsync()));
                     }
-
-                    result.AddRange(JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(await response.Content.ReadAsStringAsync()));
                 }
-            }
 
-            return Json(result);
+                return Json(result);
+            }
+            catch (Exception)
+            {
+                return Json(new List<KeyValuePair<string, string>>());
+            }
         }
 
         /// <summary>
@@ -167,20 +173,31 @@ namespace VotingWeb.Controllers
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
-            IActionResult validationResult = Validator.ValidateAadharNoToSendOtp(aadharNo);
-            if (validationResult != null) return validationResult;
-
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            int partitionKey = aadharNo.Sum(c => (int) char.GetNumericValue(c));
-            string proxyUrl = $"{proxyAddress}/api/VoteData/SubmitAadharNoToSendOtp/{aadharNo}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}", Encoding.UTF8, "application/json");
-            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            try
             {
-                return ActionResultCreator.CreateActionResult(response);
+                IActionResult validationResult = Validator.ValidateAadharNoToSendOtp(aadharNo);
+                if (validationResult != null) return validationResult;
+
+                Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+                Uri proxyAddress = GetProxyAddress(serviceName);
+                int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
+                string proxyUrl = $"{proxyAddress}/api/VoteData/SubmitAadharNoToSendOtp/{aadharNo}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+                StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}", Encoding.UTF8, "application/json");
+                postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+                {
+                    return ActionResultCreator.CreateActionResult(response);
+                }
+            }
+            catch (Exception)
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)Enums.ResponseMessageCode.Success,
+                    Content = Enums.ResponseMessageCode.Failure.ToString()
+                };
             }
         }
 
@@ -194,20 +211,31 @@ namespace VotingWeb.Controllers
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
-            IActionResult validationResult = Validator.ValidateVerifyOtpData(aadharNo, userEnteredOtp);
-            if (validationResult != null) return validationResult;
-
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
-            string proxyUrl = $"{proxyAddress}/api/VoteData/VerifyOtp/{aadharNo}/{userEnteredOtp}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}, {{ 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
-            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            try
             {
-                return ActionResultCreator.CreateActionResult(response);
+                IActionResult validationResult = Validator.ValidateVerifyOtpData(aadharNo, userEnteredOtp);
+                if (validationResult != null) return validationResult;
+
+                Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+                Uri proxyAddress = GetProxyAddress(serviceName);
+                int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
+                string proxyUrl = $"{proxyAddress}/api/VoteData/VerifyOtp/{aadharNo}/{userEnteredOtp}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+                StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}, {{ 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
+                postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+                {
+                    return ActionResultCreator.CreateActionResult(response);
+                }
+            }
+            catch (Exception)
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)Enums.ResponseMessageCode.Success,
+                    Content = Enums.ResponseMessageCode.Failure.ToString()
+                };
             }
         }
 
@@ -220,19 +248,30 @@ namespace VotingWeb.Controllers
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
-            IActionResult validationResult = Validator.ValidateLinkVoterIdToAadharData(userDetails);
-            if (validationResult != null) return validationResult;
-
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
-            string proxyUrl = $"{proxyAddress}/api/VoteData/LinkVoterIdToAadhar?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'Name' : '{userDetails.Name}', 'DOB' : '{userDetails.DOB}', 'FatherName' : '{userDetails.FatherName}', 'Gender' : '{userDetails.Gender}', 'Otp' : '{userDetails.Otp}' }}", Encoding.UTF8, "application/json");
-            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            try
             {
-                return ActionResultCreator.CreateVoterIdLinkActionResult(response);
+                IActionResult validationResult = Validator.ValidateLinkVoterIdToAadharData(userDetails);
+                if (validationResult != null) return validationResult;
+
+                Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+                Uri proxyAddress = GetProxyAddress(serviceName);
+                int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
+                string proxyUrl = $"{proxyAddress}/api/VoteData/LinkVoterIdToAadhar?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+                StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'Name' : '{userDetails.Name}', 'DOB' : '{userDetails.DOB}', 'FatherName' : '{userDetails.FatherName}', 'Gender' : '{userDetails.Gender}', 'Otp' : '{userDetails.Otp}' }}", Encoding.UTF8, "application/json");
+                postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+                {
+                    return ActionResultCreator.CreateVoterIdLinkActionResult(response);
+                }
+            }
+            catch (Exception)
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)Enums.ResponseMessageCode.Success,
+                    Content = Enums.VoterIdLinkingStatus.LinkingFailed.ToString()
+                };
             }
         }
 
@@ -245,19 +284,30 @@ namespace VotingWeb.Controllers
         [HttpPost("CastVote")]
         public async Task<IActionResult> CastVote([FromBody] UserDetails userDetails)
         {
-            IActionResult validationResult = Validator.ValidateCastVoteData(userDetails);
-            if (validationResult != null) return validationResult;
-
-            Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
-            Uri proxyAddress = GetProxyAddress(serviceName);
-            int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
-            string proxyUrl = $"{proxyAddress}/api/VoteData/CastVote?PartitionKey={partitionKey}&PartitionKind=Int64Range";
-
-            StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'VoteFor' : '{userDetails.VoteFor}', 'Otp' : '{userDetails.Otp}' }}", Encoding.UTF8, "application/json");
-            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+            try
             {
-                return ActionResultCreator.CreateCastVoteActionResult(response);
+                IActionResult validationResult = Validator.ValidateCastVoteData(userDetails);
+                if (validationResult != null) return validationResult;
+
+                Uri serviceName = VotingWeb.GetVotingDataServiceName(serviceContext);
+                Uri proxyAddress = GetProxyAddress(serviceName);
+                int partitionKey = userDetails.AadharNo.Sum(c => (int)char.GetNumericValue(c));
+                string proxyUrl = $"{proxyAddress}/api/VoteData/CastVote?PartitionKey={partitionKey}&PartitionKind=Int64Range";
+
+                StringContent postContent = new StringContent($"{{ 'AadharNo' : '{userDetails.AadharNo}', 'VoterId' : '{userDetails.VoterId}', 'VoteFor' : '{userDetails.VoteFor}', 'Otp' : '{userDetails.Otp}' }}", Encoding.UTF8, "application/json");
+                postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
+                {
+                    return ActionResultCreator.CreateCastVoteActionResult(response);
+                }
+            }
+            catch (Exception)
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)Enums.ResponseMessageCode.Success,
+                    Content = Enums.CastVoteStatus.VotingFailed.ToString()
+                };
             }
         }
     }

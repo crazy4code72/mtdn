@@ -66,23 +66,14 @@
         /// <param name="value">Value</param>
         /// <param name="name">Name</param>
         /// <returns>bool</returns>
-        internal async Task<bool> UpsertKeyValuePairInState(string key, string value, string name)
+        internal async Task UpsertKeyValuePairInState(string key, string value, string name)
         {
-            try
+            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(name);
+            using (ITransaction tx = this.stateManager.CreateTransaction())
             {
-                IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(name);
-
-                using (ITransaction tx = this.stateManager.CreateTransaction())
-                {
-                    await votesDictionary.AddOrUpdateAsync(tx, key, value, (oldKey, oldValue) => value);
-                    await tx.CommitAsync();
-                }
+                await votesDictionary.AddOrUpdateAsync(tx, key, value, (oldKey, oldValue) => value);
+                await tx.CommitAsync();
             }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -90,7 +81,7 @@
         /// </summary>
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
-        internal async Task<Enums.ResponseMessageCode> ProduceToKafkaTopic(UserDetails userDetails)
+        internal async Task ProduceToKafkaTopic(UserDetails userDetails)
         {
             //TODO: Read these values from config.
             var config = new KafkaProducerProperties
@@ -102,26 +93,17 @@
 
             using (KafkaProducer<string, string> producer = new KafkaProducer<string, string>(config, new StringSerializer(Encoding.UTF8), new StringSerializer(Encoding.UTF8)))
             {
-                List<Task> tasks = new List<Task>();
-                try
+                List<Task> tasks = new List<Task>
                 {
-                    tasks.Add(producer.ProduceAsync(userDetails.AadharNo, JsonConvert.SerializeObject(userDetails)));
+                    producer.ProduceAsync(userDetails.AadharNo, JsonConvert.SerializeObject(userDetails))
+                };
 
-                    if (tasks.Count == 100)
-                    {
-                        await Task.WhenAll(tasks);
-                    }
-                }
-                catch (Exception)
+                if (tasks.Count == 100)
                 {
-                    return Enums.ResponseMessageCode.Failure;
+                    await Task.WhenAll(tasks);
                 }
-
                 await Task.WhenAll(tasks);
             }
-
-            return Enums.ResponseMessageCode.Success;
         }
-
     }
 }

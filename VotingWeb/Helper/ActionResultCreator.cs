@@ -1,4 +1,7 @@
-﻿namespace VotingWeb.Helper
+﻿using System;
+using System.Collections.Generic;
+
+namespace VotingWeb.Helper
 {
     using global::VotingWeb.Model;
     using Microsoft.AspNetCore.Mvc;
@@ -32,13 +35,17 @@
         /// <returns>Action result</returns>
         internal static IActionResult CreateVoterIdLinkActionResult(HttpResponseMessage response)
         {
+            Dictionary<string, string> configDictionary = ConfigFileReader.GetConfigFromJsonFile();
+            string candidates = configDictionary["Candidates"];
             string voterIdLinkStatus;
             switch ((int)response.StatusCode)
             {
                 case (int)Enums.VoterIdLinkingStatus.Unauthorized: voterIdLinkStatus = Enums.VoterIdLinkingStatus.Unauthorized.ToString(); break;
                 case (int)Enums.VoterIdLinkingStatus.LinkingFailed: voterIdLinkStatus = Enums.VoterIdLinkingStatus.LinkingFailed.ToString(); break;
-                case (int)Enums.VoterIdLinkingStatus.AlreadyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.AlreadyLinked.ToString(); break;
-                case (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked: voterIdLinkStatus = Enums.VoterIdLinkingStatus.SuccessfullyLinked.ToString(); break;
+                case (int)Enums.VoterIdLinkingStatus.AlreadyLinked: voterIdLinkStatus =
+                    string.Concat(Enums.VoterIdLinkingStatus.AlreadyLinked.ToString(), ":", candidates); break;
+                case (int)Enums.VoterIdLinkingStatus.SuccessfullyLinked: voterIdLinkStatus =
+                    string.Concat(Enums.VoterIdLinkingStatus.SuccessfullyLinked.ToString(), ":", candidates); break;
                 default: voterIdLinkStatus = Enums.VoterIdLinkingStatus.Unauthorized.ToString(); break;
             }
 
