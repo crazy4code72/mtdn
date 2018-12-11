@@ -8,6 +8,7 @@
     using System.Data;
     using System.Data.SqlClient;
     using System.Threading.Tasks;
+    using Twilio;
 
     /// <summary>
     /// Send otp handler class.
@@ -23,6 +24,12 @@
         /// Randomizer.
         /// </summary>
         private static readonly Random randomizer = new Random();
+
+        /// <summary>
+        /// Twilio rest client.
+        /// </summary>
+        private static readonly TwilioRestClient twilioRestClient =
+            new TwilioRestClient(Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"), Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"));
 
         /// <summary>
         /// Constructor.
@@ -93,8 +100,9 @@
             }
             catch (Exception)
             {
-                return userDetails;
+                // ignored
             }
+
             return userDetails;
         }
 
@@ -105,7 +113,14 @@
         /// <param name="otp">Otp</param>
         private async Task SendOtpToContactNo(string contactNo, string otp)
         {
-            // TODO: Send otp to contact no.
+            try
+            {
+                twilioRestClient.SendMessage("+15627356095", contactNo, otp);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         /// <summary>
