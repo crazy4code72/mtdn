@@ -18,5 +18,6 @@
         // DB output parameters.
         public static string ContactNo_Output = "CONTACT_NO";
         public static string EmailId_Output = "EMAIL_ID";
+        public static string AadharNo_Output = "AADHAR_NO";
     }
 }

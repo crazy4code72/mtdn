@@ -82,7 +82,9 @@
                 try
                 {
                     var userDetails = JsonConvert.DeserializeObject<UserDetails>(message.Value);
-                    await this.votingDatabaseMessageHandler.HandleMessage(userDetails);
+
+                    // TODO: Batching and Wait time needs to be implemented here.
+                    await this.votingDatabaseMessageHandler.HandleMessage(new List<UserDetails> { userDetails });
                 }
                 catch (Exception e)
                 {

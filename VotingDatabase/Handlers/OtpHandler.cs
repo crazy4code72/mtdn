@@ -5,6 +5,7 @@
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
     using System.Threading.Tasks;
@@ -26,12 +27,6 @@
         private static readonly Random randomizer = new Random();
 
         /// <summary>
-        /// Twilio rest client.
-        /// </summary>
-        private static readonly TwilioRestClient twilioRestClient =
-            new TwilioRestClient(Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"), Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"));
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="votingDatabaseParameters">Voting database parameters</param>
@@ -43,38 +38,46 @@
         /// <summary>
         /// Get contact details and send otp.
         /// </summary>
-        /// <param name="aadharNo">Aadhar no</param>
-        public async Task GetContactDetailsAndSendOtpForAadharNo(string aadharNo)
+        /// <param name="userDetails">User details</param>
+        public async Task GetContactDetailsAndSendOtpForAadharNo(List<UserDetails> userDetails)
         {
-            var otp = randomizer.Next(100000, 999999);
-            var contactDetails = UpdateOtpAndGetContactDetails(aadharNo, otp);
+            userDetails.ForEach(ud => ud.Otp = randomizer.Next(100000, 999999));
+            var contactDetails = UpdateOtpAndGetContactDetails(userDetails);
 
-            var otpMessageForUser = string.Concat(otp, " is OTP for Aadhar verification.");
-
-            if (contactDetails.ContactNo != null)
+            foreach (var contactDetail in contactDetails)
             {
-                await SendOtpToContactNo(contactDetails.ContactNo, otpMessageForUser);
-            }
+                var otpMessageForUser = string.Concat(contactDetail.Otp, " is OTP for Aadhar verification.");
 
-            if (contactDetails.EmailId != null)
-            {
-                SendOtpToEmailId(contactDetails.EmailId, otpMessageForUser).Wait();
+                if (contactDetail.ContactNo != null)
+                {
+                    // Commented for now since I have not created a Twilio account.
+                    // await SendOtpToContactNo(contactDetail.ContactNo, otpMessageForUser);
+                }
+
+                if (contactDetail.EmailId != null)
+                {
+                    SendOtpToEmailId(contactDetail.EmailId, otpMessageForUser).Wait();
+                }
             }
         }
 
         /// <summary>
         /// Get contact no and email id.
         /// </summary>
-        /// <param name="aadharNo">Aadhar no</param>
-        /// <param name="otp">Otp</param>
+        /// <param name="userDetails">User details</param>
         /// <returns>User details</returns>
-        private UserDetails UpdateOtpAndGetContactDetails(string aadharNo, int otp)
+        private List<UserDetails> UpdateOtpAndGetContactDetails(List<UserDetails> userDetails)
         {
             // Make Db call, update the OTP for Aadhar No only if (aadhar no && contact no || email id), return the contact details.
             // SP called from here should also delete the OTP after 10 minutes.
-            UserDetails userDetails = new UserDetails();
             try
             {
+                var userDetailsTable = new DataTable();
+                userDetailsTable.Columns.Add(DataAccess.AadharNo_Input, typeof(string));
+                userDetailsTable.Columns.Add(DataAccess.Otp_Input, typeof(int));
+
+                userDetails.ForEach(ud => userDetailsTable.Rows.Add(ud.AadharNo, ud.Otp));
+
                 using (SqlConnection connection = new SqlConnection(this.votingDatabaseParameters.DatabaseConnectionString))
                 {
                     connection.Open();
@@ -84,16 +87,22 @@
                         CommandType = CommandType.StoredProcedure
                     };
 
-                    // Add parameters
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.AadharNo_Input, aadharNo));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.Otp_Input, otp));
+                    // Add table-valued parameters
+                    SqlParameter parameter = sqlCommand.Parameters.AddWithValue("@OtpForAadharNo", userDetailsTable);
+                    parameter.SqlDbType = SqlDbType.Structured;
 
                     using (var reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            userDetails.ContactNo = (string) reader[DataAccess.ContactNo_Output];
-                            userDetails.EmailId = (string) reader[DataAccess.EmailId_Output];
+                            foreach(var userDetail in userDetails)
+                            {
+                                if (userDetail.AadharNo.Equals((string)reader[DataAccess.AadharNo_Output]))
+                                {
+                                    userDetail.ContactNo = (string)reader[DataAccess.ContactNo_Output];
+                                    userDetail.EmailId = (string)reader[DataAccess.EmailId_Output];
+                                }
+                            }
                         }
                     }
                 }
@@ -115,6 +124,9 @@
         {
             try
             {
+                var twilioRestClient =
+                    new TwilioRestClient(Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"), Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"));
+
                 twilioRestClient.SendMessage("+15627356095", contactNo, otp);
             }
             catch (Exception)

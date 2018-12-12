@@ -1,5 +1,6 @@
 ﻿namespace VotingDatabase.Handlers
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::VotingDatabase.Model;
 
@@ -8,6 +9,6 @@
     /// </summary>
     public interface IVotingDatabaseMessageHandler
     {
-        Task HandleMessage(UserDetails userDetails);
+        Task HandleMessage(List<UserDetails> userDetails);
     }
 }

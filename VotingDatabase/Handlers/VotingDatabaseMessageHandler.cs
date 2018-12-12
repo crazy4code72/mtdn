@@ -2,6 +2,8 @@
 {
     using global::VotingDatabase.Model;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -27,12 +29,13 @@
         /// </summary>
         /// <param name="userDetails">User details.</param>
         /// <returns>Task</returns>
-        public async Task HandleMessage(UserDetails userDetails)
+        public async Task HandleMessage(List<UserDetails> userDetails)
         {
-            IDataHandler handler = handlerFactory(userDetails.EventType);
-            switch (userDetails.EventType)
+            IDataHandler handler = handlerFactory(userDetails.First().EventType);
+            switch (userDetails.First().EventType)
             {
-                case Enums.EventType.SendOtp: await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails.AadharNo); break;
+                case Enums.EventType.SendOtp:
+                    await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails); break;
                 case Enums.EventType.CastVote: await ((CastVoteHandler)handler).CastVote(userDetails); break;
                 default: throw new ArgumentOutOfRangeException();
             }

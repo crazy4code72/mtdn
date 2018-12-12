@@ -3,8 +3,10 @@
     using global::VotingDatabase.DataAccess;
     using global::VotingDatabase.Model;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -29,10 +31,13 @@
         /// <summary>
         /// Cast vote.
         /// </summary>
-        /// <param name="userDetails">User details</param>
+        /// <param name="userDetails1">User details</param>
         /// <returns>User details</returns>
-        public async Task CastVote(UserDetails userDetails)
+        public async Task CastVote(List<UserDetails> userDetails1)
         {
+            // TODO: Remove this .First() and create table data type.
+            var userDetails = userDetails1.First();
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(this.votingDatabaseParameters.DatabaseConnectionString))

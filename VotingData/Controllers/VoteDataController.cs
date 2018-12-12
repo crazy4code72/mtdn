@@ -259,7 +259,6 @@
             {
                 return new ContentResult { StatusCode = (int)Enums.VoterIdLinkingStatus.LinkingFailed };
             }
-
         }
 
         /// <summary>
