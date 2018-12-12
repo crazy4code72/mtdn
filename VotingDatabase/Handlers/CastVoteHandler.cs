@@ -31,29 +31,29 @@
         /// <summary>
         /// Cast vote.
         /// </summary>
-        /// <param name="userDetails1">User details</param>
+        /// <param name="userDetails">User details</param>
         /// <returns>User details</returns>
-        public async Task CastVote(List<UserDetails> userDetails1)
+        public async Task CastVote(List<UserDetails> userDetails)
         {
-            // TODO: Remove this .First() and create table data type.
-            var userDetails = userDetails1.First();
-
             try
             {
+                var userDetailsTable = new DataTable();
+                userDetailsTable.Columns.Add(DataAccess.AadharNo_Input, typeof(string));
+                userDetailsTable.Columns.Add(DataAccess.VoterId_Input, typeof(string));
+                userDetailsTable.Columns.Add(DataAccess.VoteFor_Input, typeof(string));
+                userDetailsTable.Columns.Add(DataAccess.Otp_Input, typeof(int));
+
+                userDetails.ForEach(ud => userDetailsTable.Rows.Add(ud.AadharNo, ud.VoterId, ud.VoteFor, ud.Otp));
+
                 using (SqlConnection connection = new SqlConnection(this.votingDatabaseParameters.DatabaseConnectionString))
                 {
                     connection.Open();
 
-                    var sqlCommand = new SqlCommand(DataAccess.CastVote, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
+                    var sqlCommand = new SqlCommand(DataAccess.CastVote, connection) { CommandType = CommandType.StoredProcedure };
 
-                    // Add parameters
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.AadharNo_Input, userDetails.AadharNo));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.VoterId_Input, userDetails.VoterId));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.VoteFor_Input, userDetails.VoteFor));
-                    sqlCommand.Parameters.Add(new SqlParameter(DataAccess.Otp_Input, userDetails.Otp));
+                    // Add table-valued parameters
+                    SqlParameter parameter = sqlCommand.Parameters.AddWithValue(DataAccess.CastVote_DataType, userDetailsTable);
+                    parameter.SqlDbType = SqlDbType.Structured;
 
                     sqlCommand.ExecuteNonQuery();
                 }

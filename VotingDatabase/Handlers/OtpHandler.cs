@@ -88,7 +88,7 @@
                     };
 
                     // Add table-valued parameters
-                    SqlParameter parameter = sqlCommand.Parameters.AddWithValue("@OtpForAadharNo", userDetailsTable);
+                    SqlParameter parameter = sqlCommand.Parameters.AddWithValue(DataAccess.OtpForAadharNo_DataType, userDetailsTable);
                     parameter.SqlDbType = SqlDbType.Structured;
 
                     using (var reader = sqlCommand.ExecuteReader())

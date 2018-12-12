@@ -34,10 +34,8 @@
             IDataHandler handler = handlerFactory(userDetails.First().EventType);
             switch (userDetails.First().EventType)
             {
-                case Enums.EventType.SendOtp:
-                    await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails); break;
+                case Enums.EventType.SendOtp: await ((OtpHandler)handler).GetContactDetailsAndSendOtpForAadharNo(userDetails); break;
                 case Enums.EventType.CastVote: await ((CastVoteHandler)handler).CastVote(userDetails); break;
-                default: throw new ArgumentOutOfRangeException();
             }
         }
     }

@@ -19,5 +19,9 @@
         public static string ContactNo_Output = "CONTACT_NO";
         public static string EmailId_Output = "EMAIL_ID";
         public static string AadharNo_Output = "AADHAR_NO";
+
+        // Data types
+        public static string CastVote_DataType = "@CastVote";
+        public static string OtpForAadharNo_DataType = "@OtpForAadharNo";
     }
 }
