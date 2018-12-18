@@ -10,6 +10,7 @@
     <Parameter Name="KafkaAutoOffsetReset" Value="latest"/>
     <Parameter Name="SampleBatchSize" Value="50"/>
     <Parameter Name="SampleWaitTimeInMinutes" Value="2"/>
+    <Parameter Name="WaitTimeinSeconds" Value="3"/>
     <Parameter Name="KafkaMaxPartitionFetchBytes" Value="10485760"/>
     <Parameter Name="DatabaseConnectionString" IsEncrypted="false" Value="Data Source=localhost;Initial Catalog=Matdaan;User ID=AirWatchAdmin;Password=AirWatchAdmin;"/>
     <Parameter Name="MaxNumberOfConcurrentMessageProcessors" Value="1"/>

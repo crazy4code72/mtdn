@@ -10,6 +10,16 @@ namespace VotingDatabase
     public class VotingDatabaseParameters
     {
         /// <summary>
+        /// Default wait time before flushing (3 seconds)
+        /// </summary>
+        private const int DefaultWaitTimeInSeconds = 3;
+
+        /// <summary>
+        /// Wait time in seconds.
+        /// </summary>
+        public TimeSpan WaitTimeinSeconds { get; set; }
+
+        /// <summary>
         /// Default sample batch size (50)
         /// </summary>
         private const int DefaultSampleBatchSize = 50;
@@ -227,6 +237,8 @@ namespace VotingDatabase
                 // databaseConnectionString = databaseConnection.DecryptValue().ConvertToUnsecureString();
             }
 
+            var waitTimeInSeconds = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
+                .Parameters[nameof(WaitTimeinSeconds)].Value;
             var certificateLocation = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
                 .Parameters[nameof(CertificateLocation)].Value;
             var keyLocation = configurationPackage.Settings.Sections[DatabaseConsumerConfigSection]
@@ -278,6 +290,11 @@ namespace VotingDatabase
                 tempSampleBatchSize = DefaultSampleBatchSize;
             }
 
+            if (!int.TryParse(waitTimeInSeconds, out int tempWaitTimeInSeconds))
+            {
+                tempWaitTimeInSeconds = DefaultWaitTimeInSeconds;
+            }
+
             if (!int.TryParse(sampleWaitTimeInMinutes, out int tempSampleWaitTimeInMinutes))
             {
                 tempSampleWaitTimeInMinutes = DefaultSampleWaitTimeInMinutes;
@@ -324,6 +341,7 @@ namespace VotingDatabase
                 MaxNumberOfConcurrentMessageProcessors = maxConcurrentProcessors,
                 DatabaseConnectionString = databaseConnectionString,
                 SampleWaitTimeInMinutes = new TimeSpan(0, tempSampleWaitTimeInMinutes, 0),
+                WaitTimeinSeconds = new TimeSpan(0, 0, tempWaitTimeInSeconds),
                 SampleBatchSize = tempSampleBatchSize,
                 KafkaProducerServerAddress = producerServerAddressList,
                 KafkaProducerTopicName = producerTopicName,

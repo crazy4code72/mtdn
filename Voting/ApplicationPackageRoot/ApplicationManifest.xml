@@ -14,6 +14,7 @@
     <Parameter Name="VotingDatabase_KafkaAutoOffsetReset" DefaultValue="latest" />
     <Parameter Name="VotingDatabase_SampleBatchSize" DefaultValue="50" />
     <Parameter Name="VotingDatabase_SampleWaitTimeInMinutes" DefaultValue="1" />
+    <Parameter Name="VotingDatabase_WaitTimeInSeconds" DefaultValue="3" />
     <Parameter Name="VotingDatabase_DatabaseConnectionString" DefaultValue="Data Source=localhost;Initial Catalog=Matdaan;User ID=AirWatchAdmin;Password=AirWatchAdmin;" />
     <Parameter Name="VotingDatabase_KafkaMaxPartitionFetchBytes" DefaultValue="10485760" />
     <Parameter Name="VotingDatabase_MaxNumberOfConcurrentMessageProcessors" DefaultValue="1" />
