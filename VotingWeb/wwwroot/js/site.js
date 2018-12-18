@@ -206,6 +206,8 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             return;
         }
 
+        if (!confirm("Are you sure you want to vote for " + castVoteFor + " ?")) return;
+
         $scope.updateCastVoteElements("block", true, "Submitting your vote...", "blue");
 
         var payload = { "AadharNo": aadharNo, "VoterId": voterId, "VoteFor": castVoteFor, "Otp": userEnteredOtp };
