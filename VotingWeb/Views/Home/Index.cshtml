@@ -23,7 +23,17 @@
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <button id="btnAddAadharNo" class="btn btn-primary" ng-click="SubmitAadharNoToSendOtp(aadharNo)">
+                        <input id="txtCaptcha" ng-click="GenerateCaptcha()" type="text" ng-model="CaptchaText" class="captcha" readonly/>
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <input id="txtCaptcha" type="text" class="form-control" placeholder="Enter text shown in above image" ng-model="userEnteredCaptchaText" required />
+                    </div>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <div class="col-xs-6 form-group">
+                        <button id="btnAddAadharNo" class="btn btn-primary" ng-click="SubmitAadharNoToSendOtp(aadharNo, userEnteredCaptchaText)">
                             Submit Aadhar No
                         </button>
                     </div>

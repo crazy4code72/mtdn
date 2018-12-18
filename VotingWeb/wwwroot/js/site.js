@@ -56,10 +56,31 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         window.location.reload();
     };
 
+    $scope.refresh = function () {
+        $scope.GenerateCaptcha();
+    };
+
+    $scope.GenerateCaptcha = function () {
+        $scope.CaptchaText = Math.floor(Math.random() * 10) + ' ' + Math.floor(Math.random() * 10) + ' ' + Math.floor(Math.random() * 10) + ' ' +
+                             Math.floor(Math.random() * 10) + ' ' + Math.floor(Math.random() * 10) + ' ' + Math.floor(Math.random() * 10) + ' ' +
+                             Math.floor(Math.random() * 10);
+    };
+
     // Submit Aadhar no to send otp to registered contact no and email id.
-    $scope.SubmitAadharNoToSendOtp = function (aadharNo) {
-        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999) {
+    $scope.SubmitAadharNoToSendOtp = function (aadharNo, userEnteredCaptchaText) {
+        if (aadharNo === undefined || aadharNo.toString().trim().length !== 12 || parseInt(aadharNo) > 999999999999)
+        {
             $scope.updateAadharElements("block", false, "Invalid Aadhar No.", "red");
+            $scope.updateOtpElements("none", undefined, undefined, undefined);
+            $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+            $scope.updateCastVoteElements("none", true, undefined, undefined);
+            return;
+        }
+
+        if (userEnteredCaptchaText === undefined || userEnteredCaptchaText === "" || 
+            userEnteredCaptchaText.split(' ').join('') !== $scope.CaptchaText.split(' ').join(''))
+        {
+            $scope.updateAadharElements("block", false, "Incorrect text, click on the image to change and retry.", "red");
             $scope.updateOtpElements("none", undefined, undefined, undefined);
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
             $scope.updateCastVoteElements("none", true, undefined, undefined);
