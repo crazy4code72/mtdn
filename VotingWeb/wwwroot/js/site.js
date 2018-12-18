@@ -304,7 +304,10 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             document.getElementById("CastVoteDiv").style.display = castVoteDivDisplay;
         }
         if (disableCastVoteElements !== undefined) {
-            document.getElementsByClassName("candidates").disabled = disableCastVoteElements;
+            var candidateList = document.getElementsByClassName("candidates");
+            for (var i = 0; i < candidateList.length; ++i) {
+                candidateList[i].disabled = disableCastVoteElements;
+            }
         }
         if (castVoteMsg !== undefined) {
             $scope.castVoteMessage = castVoteMsg;
