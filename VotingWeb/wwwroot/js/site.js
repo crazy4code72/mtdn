@@ -66,6 +66,8 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             return;
         }
 
+        $scope.updateAadharElements("block", true, "Sending OTP to registered mobile no and email id ...", "blue");
+
         $http.post('api/Votes/SubmitAadharNoToSendOtp/' + aadharNo, {
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
@@ -96,6 +98,8 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
+
+        $scope.updateOtpElements("block", true, "Verifying OTP...", "blue");
 
         $http.post('api/Votes/VerifyOtp/' + aadharNo + '/' + userEnteredOtp, {
             transformRequest: angular.identity,
@@ -129,6 +133,8 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
+
+        $scope.updateVoterCardElements("block", true, "Trying to link Voter Id with Aadhar...", "blue");
 
         var payload = { "AadharNo": aadharNo, "VoterId": voterId, "Name": name, "DOB": dob, "FatherName": fatherName, "Gender": gender, "Otp": userEnteredOtp };
 
@@ -199,6 +205,8 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             $scope.updateCastVoteElements("block", false, "Voting failed, please try again.", "red");
             return;
         }
+
+        $scope.updateCastVoteElements("block", true, "Submitting your vote...", "blue");
 
         var payload = { "AadharNo": aadharNo, "VoterId": voterId, "VoteFor": castVoteFor, "Otp": userEnteredOtp };
 
