@@ -98,7 +98,7 @@
                     // Match the newly arrived user details event type and start processing it in batches.
                     foreach (var keyValuePair in userDetailsDictionary)
                     {
-                        if (userDetails.EventType.ToString().Equals(keyValuePair.Key.ToString(), StringComparison.OrdinalIgnoreCase))
+                        if (userDetails.EventType.Equals(keyValuePair.Key))
                         {
                             await this.ProcessMsg(userDetailsDictionary[keyValuePair.Key], userDetails, cancellationToken);
                             break;
@@ -175,10 +175,11 @@
         /// <param name="userDetails">Newly arrived user details</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Task</returns>
-        public async Task ProcessMsg(UserDetailsBag userDetailsBag, UserDetails userDetails, CancellationToken cancellationToken)
+        private async Task ProcessMsg(UserDetailsBag userDetailsBag, UserDetails userDetails, CancellationToken cancellationToken)
         {
             if ((DateTime.UtcNow - userDetailsBag.BatchStartTime).TotalSeconds <= this.votingDatabaseParameters.WaitTimeinSeconds.Seconds
-                && userDetailsBag.UserDetailsCollection.Count < this.votingDatabaseParameters.SampleBatchSize)
+                && userDetailsBag.UserDetailsCollection.Count < this.votingDatabaseParameters.SampleBatchSize
+                && !userDetailsBag.UserDetailsCollection.Any(ud => ud.AadharNo.Equals(userDetails.AadharNo)))
             {
                 /*
                    This code flow will be executed when we have a newly arrived msg and the batch is not full
