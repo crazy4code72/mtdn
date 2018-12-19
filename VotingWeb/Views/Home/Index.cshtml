@@ -15,7 +15,8 @@
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtAddAadharNo" type="number" class="form-control" placeholder="Enter Aadhar No" ng-model="aadharNo" required="required" />
+                        <label class="control-label" for="txtAddAadharNo">Enter Aadhar No</label>
+                        <input id="txtAddAadharNo" type="number" class="form-control" placeholder="Aadhar No (without spaces)" ng-model="aadharNo" required="required" />
                     </div>
                     <div class="col-xs-6 form-group">
                         <input ng-model="AadharSubmissionMessage" disabled="disabled" class="labels" style="color:{{AadharSubmissionColor}};" />
@@ -23,11 +24,12 @@
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtCaptcha" ng-click="GenerateCaptcha()" type="text" ng-model="CaptchaText" class="captcha" readonly/>
+                        <input ng-click="GenerateCaptcha()" type="text" ng-model="CaptchaText" class="captcha" readonly/>
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
+                        <label class="control-label" for="txtCaptcha">Enter text shown in above image</label>
                         <input id="txtCaptcha" type="text" class="form-control" placeholder="Enter text shown in above image" ng-model="userEnteredCaptchaText" required />
                     </div>
                 </div>
@@ -46,6 +48,7 @@
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
+                        <label class="control-label" for="txtEnterOtp">Enter OTP</label>
                         <input id="txtEnterOtp" type="number" class="form-control" placeholder="Enter OTP" ng-model="userEnteredOtp" required="required" />
                     </div>
                     <div class="col-xs-6 form-group">
@@ -67,32 +70,40 @@
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <hr><br/><label>Enter details as mentioned in your Voter card.</label>
+                        <hr><br/><label class="heading">Enter details exactly as printed in Voter card.</label>
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterVoterId" type="text" class="form-control" placeholder="Enter Voter Id" ng-model="voterId" required="required" />
+                        <label class="control-label" for="txtEnterVoterId">Enter Voter Id</label>
+                        <input id="txtEnterVoterId" type="text" class="form-control" placeholder="Voter Id (without spaces)" ng-model="voterId" required="required" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterName" type="text" class="form-control" placeholder="Enter Name" ng-model="name" required="required" />
+                        <label class="control-label" for="txtEnterName">Enter Name</label>
+                        <input id="txtEnterName" type="text" class="form-control" placeholder="Name" ng-model="name" required="required" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterFatherName" type="text" class="form-control" placeholder="Enter Father's Name" ng-model="fatherName" required="required" />
+                        <label class="control-label" for="txtEnterFatherName">Enter Father's Name</label>
+                        <input id="txtEnterFatherName" type="text" class="form-control" placeholder="Father's Name" ng-model="fatherName" required="required" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterDOB" type="text" class="form-control" placeholder="Enter DOB (dd/mm/yyyy)" ng-model="dob" required="required" />
+                        <label class="control-label" for="txtEnterDOB">Enter DOB (dd/mm/yyyy)</label>
+                        <input id="txtEnterDOB" type="text" class="form-control" placeholder="DOB (dd/mm/yyyy)" ng-model="dob" required="required" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <input id="txtEnterGender" type="text" class="form-control" placeholder="Enter Gender" ng-model="gender" required="required" />
+                        <label class="control-label" for="txtEnterGender">Enter Gender</label>
+                        <input id="txtEnterGender" type="text" class="form-control" placeholder="Gender" ng-model="gender" required="required" />
+                    </div>
+                    <div class="col-xs-6 form-group">
+                        <input ng-model="VoterIdLinkingMessage" disabled="disabled" class="labels" style="color:{{VoterIdLinkingColor}};" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
@@ -100,9 +111,6 @@
                         <button id="btnLinkVoterIdToAadhar" class="btn btn-primary" ng-click="LinkVoterIdToAadhar(aadharNo, voterId, name, dob, fatherName, gender, userEnteredOtp)">
                             Link VoterId to Aadhar
                         </button>
-                    </div>
-                    <div class="col-xs-6 form-group">
-                        <input ng-model="VoterIdLinkingMessage" disabled="disabled" class="labels" style="color:{{VoterIdLinkingColor}};" />
                     </div>
                 </div>
             </div>
@@ -113,7 +121,10 @@
             <div class="col-xs-8 col-xs-offset-2">
                 <div class="col-xs-12 center-block">
                     <div class="col-xs-6 form-group">
-                        <hr><br/><label>Click on candidate name to vote.</label>
+                        <hr><br /><label class="heading">Click on candidate name to vote.</label>
+                    </div>
+                    <div class="col-xs-6 form-group">
+                        <input ng-model="castVoteMessage" disabled="disabled" class="labels" style="margin-top:8%;color:{{castVoteColor}};" />
                     </div>
                 </div>
                 <div class="col-xs-12 center-block">
@@ -127,9 +138,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-6 form-group">
-                        <input ng-model="castVoteMessage" disabled="disabled" class="labels" style="margin-top:8px;color:{{castVoteColor}};" />
                     </div>
                 </div>
             </div>

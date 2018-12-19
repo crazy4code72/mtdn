@@ -77,17 +77,17 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             return;
         }
 
-        if (userEnteredCaptchaText === undefined || userEnteredCaptchaText === "" || 
+        if (userEnteredCaptchaText === undefined || userEnteredCaptchaText === "" ||
             userEnteredCaptchaText.split(' ').join('') !== $scope.CaptchaText.split(' ').join(''))
         {
-            $scope.updateAadharElements("block", false, "Incorrect text, click on the image to change and retry.", "red");
+            $scope.updateAadharElements("block", false, "Incorrect captcha text, click on the image to change and retry.", "red");
             $scope.updateOtpElements("none", undefined, undefined, undefined);
             $scope.updateVoterCardElements("none", undefined, undefined, undefined);
             $scope.updateCastVoteElements("none", true, undefined, undefined);
             return;
         }
 
-        $scope.updateAadharElements("block", true, "Sending OTP to registered mobile no and email id ...", "blue");
+        $scope.updateAadharElements("block", true, "Sending OTP to registered mobile no and email id...", "blue");
 
         $http.post('api/Votes/SubmitAadharNoToSendOtp/' + aadharNo, {
             transformRequest: angular.identity,
@@ -95,7 +95,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         })
         .then(function (response) {
             if (response.data === "Success") {
-                $scope.updateAadharElements("block", false, "OTP sent to registered mobile no and email id.", "green");
+                $scope.updateAadharElements("block", false, "OTP sent to registered mobile no and email id.", "#07bb07");
                 $scope.updateOtpElements("block", false, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
                 $scope.updateCastVoteElements("none", true, undefined, undefined);
@@ -120,7 +120,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             return;
         }
 
-        $scope.updateOtpElements("block", true, "Verifying OTP...", "blue");
+        $scope.updateOtpElements("block", true, "Verifying OTP, please wait...", "blue");
 
         $http.post('api/Votes/VerifyOtp/' + aadharNo + '/' + userEnteredOtp, {
             transformRequest: angular.identity,
@@ -129,7 +129,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         .then(function (response) {
             if (response.data === "Success") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
-                $scope.updateOtpElements("block", true, "OTP verified successfully.", "green");
+                $scope.updateOtpElements("block", true, "OTP verified successfully.", "#07bb07");
                 $scope.updateVoterCardElements("block", false, undefined, undefined);
                 $scope.updateCastVoteElements("none", true, undefined, undefined);
             } else {
@@ -175,7 +175,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 }
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
-                $scope.updateVoterCardElements("block", true, "Voter Id successfully linked to Aadhar.", "green");
+                $scope.updateVoterCardElements("block", true, "Voter Id successfully linked to Aadhar.", "#07bb07");
                 $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (splitResponse[0] === "AlreadyLinked") {
@@ -193,7 +193,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.candidates = [];
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
-                $scope.updateVoterCardElements("block", false, "Incorrect Voter Id, failed to link Voter Id to Aadhar.", "red");
+                $scope.updateVoterCardElements("block", false, "Incorrect Voter details, failed to link Voter Id to Aadhar.", "red");
                 $scope.updateCastVoteElements("none", true, undefined, undefined);
             }
             else if (response.data === "Unauthorized") {
@@ -229,7 +229,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
 
         if (!confirm("Are you sure you want to vote for " + castVoteFor + " ?")) return;
 
-        $scope.updateCastVoteElements("block", true, "Submitting your vote...", "blue");
+        $scope.updateCastVoteElements("block", true, "Submitting your vote, please wait...", "blue");
 
         var payload = { "AadharNo": aadharNo, "VoterId": voterId, "VoteFor": castVoteFor, "Otp": userEnteredOtp };
 
@@ -244,7 +244,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, undefined, undefined);
-                $scope.updateCastVoteElements("block", true, "Voting successful.", "green");
+                $scope.updateCastVoteElements("block", true, "Voting successful.", "#07bb07");
             }
             else if (response.data === "AlreadyVoted") {
                 $scope.updateAadharElements("block", true, undefined, undefined);
@@ -268,6 +268,7 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }
         if (disableAadharElements !== undefined) {
             document.getElementById("txtAddAadharNo").disabled = disableAadharElements;
+            document.getElementById("txtCaptcha").disabled = disableAadharElements;
             document.getElementById("btnAddAadharNo").disabled = disableAadharElements;
         }
         if (aadharSubmissionMsg !== undefined) {

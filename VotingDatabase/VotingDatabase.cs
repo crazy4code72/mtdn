@@ -181,21 +181,10 @@
                 && userDetailsBag.UserDetailsCollection.Count < this.votingDatabaseParameters.SampleBatchSize
                 && !userDetailsBag.UserDetailsCollection.Any(ud => ud.AadharNo.Equals(userDetails.AadharNo)))
             {
-                /*
-                   This code flow will be executed when we have a newly arrived msg and the batch is not full
-                   and elapsed time is less than wait time.
-                   So, in this case, we will add the msg to user details collection.
-                */
                 userDetailsBag.UserDetailsCollection.Add(userDetails);
             }
             else
             {
-                /*
-                   This code flow will be executed when we have a newly arrived message but either the wait time is over or
-                   batch is full.
-                   So, in this case, we will first process the collection, flush it, then add the newly arrived msg to
-                   the collection.
-                */
                 await this.ProcessMessage(userDetailsBag.UserDetailsCollection, cancellationToken);
                 userDetailsBag.UserDetailsCollection.Clear();
                 userDetailsBag.UserDetailsCollection.Add(userDetails);

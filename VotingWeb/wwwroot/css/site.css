@@ -6,7 +6,8 @@
     border: transparent;
     background: transparent;
     width: 460px;
-    padding-top: 8px;
+    padding-top: 10%;
+    font-family: cursive;
 }
 
 .startFresh {
@@ -17,6 +18,10 @@
 
 .candidates {
 
+}
+
+.heading {
+    color: blue;
 }
 
 .captcha {
