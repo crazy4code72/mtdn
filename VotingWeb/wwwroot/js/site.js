@@ -170,24 +170,26 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
             if (splitResponse[0] === "SuccessfullyLinked") {
                 if (splitResponse[1] !== "") {
                     $scope.candidates = splitResponse[1].split('#');
+                    $scope.updateCastVoteElements("block", false, undefined, undefined);
                 } else {
                     $scope.candidates = [];
+                    $scope.updateCastVoteElements("none", true, undefined, undefined);
                 }
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id successfully linked to Aadhar.", "#07bb07");
-                $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (splitResponse[0] === "AlreadyLinked") {
                 if (splitResponse[1] !== "") {
                     $scope.candidates = splitResponse[1].split('#');
+                    $scope.updateCastVoteElements("block", false, undefined, undefined);
                 } else {
                     $scope.candidates = [];
+                    $scope.updateCastVoteElements("none", true, undefined, undefined);
                 }
                 $scope.updateAadharElements("block", true, undefined, undefined);
                 $scope.updateOtpElements("block", true, undefined, undefined);
                 $scope.updateVoterCardElements("block", true, "Voter Id is already linked to Aadhar.", "blue");
-                $scope.updateCastVoteElements("block", false, undefined, undefined);
             }
             else if (response.data === "LinkingFailed") {
                 $scope.candidates = [];
