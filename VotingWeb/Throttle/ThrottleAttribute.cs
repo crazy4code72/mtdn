@@ -42,24 +42,28 @@
         /// <param name="filterContext">Filter context</param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            string key = string.Empty;
-            switch (ThrottleOn)
+            try
             {
-                case ThrottleOn.IpAddress: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
-                default: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
-            }
-
-            var currentRequestCount = HttpRuntime.Cache[key] == null ? 1 : (int)HttpRuntime.Cache[key] + 1;
-            HttpRuntime.Cache.Insert(key, currentRequestCount, null, DateTime.UtcNow.AddMinutes(TimeDurationInMinutes), Cache.NoSlidingExpiration, CacheItemPriority.Low, null);
-
-            if (currentRequestCount > AllowedRequestCount)
-            {
-                filterContext.Result =  new ContentResult
+                string key = string.Empty;
+                switch (ThrottleOn)
                 {
-                    StatusCode = (int)Enums.ResponseMessageCode.Success,
-                    Content = Enums.ResponseMessageCode.TooManyTries.ToString()
-                };
+                    case ThrottleOn.IpAddress: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
+                    default: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
+                }
+
+                var currentRequestCount = HttpRuntime.Cache[key] == null ? 1 : (int)HttpRuntime.Cache[key] + 1;
+                HttpRuntime.Cache.Insert(key, currentRequestCount, null, DateTime.UtcNow.AddMinutes(TimeDurationInMinutes), Cache.NoSlidingExpiration, CacheItemPriority.Low, null);
+
+                if (currentRequestCount > AllowedRequestCount)
+                {
+                    filterContext.Result = new ContentResult
+                    {
+                        StatusCode = (int)Enums.ResponseMessageCode.Success,
+                        Content = Enums.ResponseMessageCode.TooManyTries.ToString()
+                    };
+                }
             }
+            catch (Exception) { }
         }
     }
 }
