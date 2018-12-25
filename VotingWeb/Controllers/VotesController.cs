@@ -1,6 +1,7 @@
 namespace VotingWeb.Controllers
 {
     using global::VotingWeb.Model;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
     using System;
@@ -22,15 +23,17 @@ namespace VotingWeb.Controllers
         private readonly FabricClient fabricClient;
         private readonly string reverseProxyBaseUri;
         private readonly StatelessServiceContext serviceContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public VotesController(HttpClient httpClient, StatelessServiceContext context, FabricClient fabricClient)
+        public VotesController(HttpClient httpClient, StatelessServiceContext context, FabricClient fabricClient, IHttpContextAccessor httpContextAccessor)
         {
             this.fabricClient = fabricClient;
             this.httpClient = httpClient;
             serviceContext = context;
+            this.httpContextAccessor = httpContextAccessor;
             reverseProxyBaseUri = Environment.GetEnvironmentVariable("ReverseProxyBaseUri");
         }
 
@@ -170,6 +173,7 @@ namespace VotingWeb.Controllers
         /// <param name="aadharNo">Aadhar no</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/SubmitAadharNoToSendOtp/aadharNo
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInMinutes = 15, AllowedRequestCount = 5)]
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {

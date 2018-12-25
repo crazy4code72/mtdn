@@ -99,6 +99,11 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
                 $scope.updateOtpElements("block", false, undefined, undefined);
                 $scope.updateVoterCardElements("none", undefined, undefined, undefined);
                 $scope.updateCastVoteElements("none", true, undefined, undefined);
+            } else if (response.data === "TooManyTries") {
+                $scope.updateAadharElements("block", false, "Too many attempts, please try after 15 minutes.", "red");
+                $scope.updateOtpElements("block", false, undefined, undefined);
+                $scope.updateVoterCardElements("none", undefined, undefined, undefined);
+                $scope.updateCastVoteElements("none", true, undefined, undefined);
             } else {
                 $scope.updateAadharElements("block", false, "OTP sending failed, please try again.", "red");
                 $scope.updateOtpElements("none", undefined, undefined, undefined);

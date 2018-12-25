@@ -5,7 +5,8 @@
         public enum ResponseMessageCode
         {
             Success = 200,
-            Failure = 202
+            Failure = 202,
+            TooManyTries = 201
         }
 
         public enum EventType
