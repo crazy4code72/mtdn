@@ -121,19 +121,14 @@ namespace VotingWeb.Controllers
         }
 
         /// <summary>
-        /// Creates a partition key from the given name.
-        /// Uses the zero-based numeric position in the alphabet of the first letter of the name (0-25).
+        /// Get live voting results.
         /// </summary>
-        /// <param name="name"></param>
         /// <returns></returns>
-        private long GetPartitionKey(string name)
-        {
-            return Char.ToUpper(name.First()) - 'A';
-        }
-
         // GET: api/Votes/LiveVotingResult
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 1, TimeDurationInSeconds = 7)]
+        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 50, TimeDurationInSeconds = 1)]
         [HttpGet("LiveVotingResult")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetLiveVotingResult()
         {
             try
             {
@@ -173,7 +168,8 @@ namespace VotingWeb.Controllers
         /// <param name="aadharNo">Aadhar no</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/SubmitAadharNoToSendOtp/aadharNo
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInMinutes = 15, AllowedRequestCount = 5)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInSeconds = 900, AllowedRequestCount = 5)]
+        [Throttle(ThrottleOn = ThrottleOn.Path, TimeDurationInSeconds = 1, AllowedRequestCount = 100)]
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
@@ -212,6 +208,8 @@ namespace VotingWeb.Controllers
         /// <param name="userEnteredOtp">User entered otp</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/VerifyOtp/aadharNo/userEnteredOtp
+        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 10, TimeDurationInSeconds = 1)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 10, TimeDurationInSeconds = 900)]
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
@@ -225,7 +223,7 @@ namespace VotingWeb.Controllers
                 int partitionKey = aadharNo.Sum(c => (int)char.GetNumericValue(c));
                 string proxyUrl = $"{proxyAddress}/api/VoteData/VerifyOtp/{aadharNo}/{userEnteredOtp}?PartitionKey={partitionKey}&PartitionKind=Int64Range";
 
-                StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}' }}, {{ 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
+                StringContent postContent = new StringContent($"{{ 'aadharNo' : '{aadharNo}', 'userEnteredOtp' : '{userEnteredOtp}' }}", Encoding.UTF8, "application/json");
                 postContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                 using (HttpResponseMessage response = await httpClient.PostAsync(proxyUrl, postContent))
@@ -249,6 +247,8 @@ namespace VotingWeb.Controllers
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/LinkVoterIdToAadhar
+        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 10, TimeDurationInSeconds = 1)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 10, TimeDurationInSeconds = 900)]
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
@@ -285,6 +285,8 @@ namespace VotingWeb.Controllers
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/CastVote
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInSeconds = 900, AllowedRequestCount = 5)]
+        [Throttle(ThrottleOn = ThrottleOn.Path, TimeDurationInSeconds = 1, AllowedRequestCount = 100)]
         [HttpPost("CastVote")]
         public async Task<IActionResult> CastVote([FromBody] UserDetails userDetails)
         {

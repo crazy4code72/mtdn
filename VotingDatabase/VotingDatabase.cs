@@ -120,12 +120,8 @@
         {
             return new Dictionary<Enums.EventType, UserDetailsBag>
             {
-                {
-                    Enums.EventType.SendOtp, new UserDetailsBag(new List<UserDetails>(), DateTime.UtcNow)
-                },
-                {
-                    Enums.EventType.CastVote, new UserDetailsBag(new List<UserDetails>(), DateTime.UtcNow)
-                }
+                { Enums.EventType.SendOtp, new UserDetailsBag(new List<UserDetails>(), DateTime.UtcNow) },
+                { Enums.EventType.CastVote, new UserDetailsBag(new List<UserDetails>(), DateTime.UtcNow) }
             };
         }
 

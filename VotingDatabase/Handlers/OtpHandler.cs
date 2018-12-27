@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Linq;
     using System.Threading.Tasks;
     using Twilio;
 
@@ -44,21 +45,11 @@
             userDetails.ForEach(ud => ud.Otp = randomizer.Next(100000, 999999));
             var contactDetails = UpdateOtpAndGetContactDetails(userDetails);
 
-            foreach (var contactDetail in contactDetails)
-            {
-                var otpMessageForUser = string.Concat(contactDetail.Otp, " is OTP for Aadhar verification.");
+            Parallel.ForEach(contactDetails.Where(cd => !string.IsNullOrWhiteSpace(cd.EmailId)), contactDetail => SendOtpToEmailId(contactDetail.EmailId,
+                string.Concat(contactDetail.Otp, " is OTP for Aadhar verification.")).Wait());
 
-                if (contactDetail.ContactNo != null)
-                {
-                    // Commented for now since I have not created a Twilio account.
-                    // await SendOtpToContactNo(contactDetail.ContactNo, otpMessageForUser);
-                }
-
-                if (contactDetail.EmailId != null)
-                {
-                    SendOtpToEmailId(contactDetail.EmailId, otpMessageForUser).Wait();
-                }
-            }
+            //Parallel.ForEach(contactDetails.Where(cd => !string.IsNullOrWhiteSpace(cd.ContactNo)), async contactDetail => await SendOtpToContactNo(contactDetail.ContactNo,
+            //    string.Concat(contactDetail.Otp, " is OTP for Aadhar verification.")));
         }
 
         /// <summary>
@@ -138,7 +129,7 @@
         /// <summary>
         /// Send Otp to email id.
         /// </summary>
-        private static async Task SendOtpToEmailId(string emailId, string otp)
+        private async Task SendOtpToEmailId(string emailId, string otp)
         {
             try
             {

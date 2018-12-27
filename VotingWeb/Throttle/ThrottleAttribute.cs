@@ -11,7 +11,8 @@
     /// </summary>
     public enum ThrottleOn
     {
-        IpAddress = 1
+        IpAddress = 1,
+        Path = 2
     }
 
     /// <summary>
@@ -26,10 +27,10 @@
         public ThrottleOn ThrottleOn { get; set; }
 
         /// <summary>
-        /// Time duration in minutes.
+        /// Time duration in seconds.
         /// User (ip address) will be able to make only 'AllowedRequestCount' number of requests in this time period.
         /// </summary>
-        public int TimeDurationInMinutes { get; set; }
+        public int TimeDurationInSeconds { get; set; }
 
         /// <summary>
         /// Allowed request count.
@@ -48,11 +49,12 @@
                 switch (ThrottleOn)
                 {
                     case ThrottleOn.IpAddress: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
+                    case ThrottleOn.Path: key = filterContext.HttpContext.Request.Path.ToString(); break;
                     default: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
                 }
 
                 var currentRequestCount = HttpRuntime.Cache[key] == null ? 1 : (int)HttpRuntime.Cache[key] + 1;
-                HttpRuntime.Cache.Insert(key, currentRequestCount, null, DateTime.UtcNow.AddMinutes(TimeDurationInMinutes), Cache.NoSlidingExpiration, CacheItemPriority.Low, null);
+                HttpRuntime.Cache.Insert(key, currentRequestCount, null, DateTime.UtcNow.AddSeconds(TimeDurationInSeconds), Cache.NoSlidingExpiration, CacheItemPriority.Low, null);
 
                 if (currentRequestCount > AllowedRequestCount)
                 {
