@@ -4,6 +4,7 @@ app.run(function () { });
 app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeout', function ($rootScope, $scope, $http, $timeout) {
 
     $scope.candidates = [];
+    $scope.FetchLiveVotingMessage = "Fetching current voting result, please wait...";
 
     $scope.LiveVotingResult = function () {
         $scope.updateAadharElements("none", undefined, undefined, undefined);
@@ -17,14 +18,19 @@ app.controller('VotingAppController', ['$rootScope', '$scope', '$http', '$timeou
         }, 10000);
     };
 
-    $scope.FetchLiveVotingResult = function() {
+    $scope.FetchLiveVotingResult = function () {
+        $scope.FetchLiveVotingMessage = "Fetching current voting result, please wait...";
         $http.get('api/Votes/LiveVotingResult')
             .then(function(response) {
                 if (response === null || response === undefined || response.data.length === 0) {
-                    $scope.votes = { "data": [{ key: "No vote casted for any candidate", value: "0" }] };
+                    $scope.FetchLiveVotingMessage = "No vote casted for any candidate.";
+                    $scope.votes = { "data": [] };
                 } else if (response.data === "TooManyTries") {
                     // Don't change the current voting data, try to get latest voting data in next call after 10 seconds.
+                    $scope.FetchLiveVotingMessage = "Too many requests from your device, please keep only one tab open.";
+                    $scope.votes = { "data": [] };
                 } else {
+                    $scope.FetchLiveVotingMessage = "Current voting status.";
                     $scope.votes = response;
                 }
                 document.getElementById("LiveVotingResult").style.display = "block";

@@ -210,7 +210,7 @@ INSERT INTO [dbo].[AADHAR]
            ,'01/12/1991'
            ,'Male'
            ,'8951471517'
-           ,'zmsrms@gmail.com'
+           ,'crazy4code72@gmail.com'
            ,NULL
            ,NULL)
 GO
