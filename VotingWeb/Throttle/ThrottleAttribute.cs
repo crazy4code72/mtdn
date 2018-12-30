@@ -3,17 +3,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
     using System;
-    using System.Web;
-    using System.Web.Caching;
-
-    /// <summary>
-    /// Enum for parameter to throttle on.
-    /// </summary>
-    public enum ThrottleOn
-    {
-        IpAddress = 1,
-        Path = 2
-    }
+    using System.Collections.Concurrent;
 
     /// <summary>
     /// Throttle attribute.
@@ -30,12 +20,17 @@
         /// Time duration in seconds.
         /// User (ip address) will be able to make only 'AllowedRequestCount' number of requests in this time period.
         /// </summary>
-        public int TimeDurationInSeconds { get; set; }
+        public int ExpiryTimeInSeconds { get; set; }
 
         /// <summary>
         /// Allowed request count.
         /// </summary>
-        public int AllowedRequestCount { get; set; }
+        public int MaximumRequestCount { get; set; }
+
+        /// <summary>
+        /// Cache.
+        /// </summary>
+        private ConcurrentDictionary<string, ThrottleInfo> cache = new ConcurrentDictionary<string, ThrottleInfo>();
 
         /// <summary>
         /// On action execution.
@@ -53,10 +48,20 @@
                     default: key = filterContext.HttpContext.Connection.RemoteIpAddress.ToString(); break;
                 }
 
-                var currentRequestCount = HttpRuntime.Cache[key] == null ? 1 : (int)HttpRuntime.Cache[key] + 1;
-                HttpRuntime.Cache.Insert(key, currentRequestCount, null, DateTime.UtcNow.AddSeconds(TimeDurationInSeconds), Cache.NoSlidingExpiration, CacheItemPriority.Low, null);
+                ThrottleInfo throttleInfo = cache.ContainsKey(key) ? cache[key] : null;
+                if (throttleInfo == null || throttleInfo.ExpiresAt <= DateTime.UtcNow)
+                {
+                    throttleInfo = new ThrottleInfo
+                    {
+                        ExpiresAt = DateTime.UtcNow.AddSeconds(ExpiryTimeInSeconds),
+                        RequestCount = 0
+                    };
+                };
 
-                if (currentRequestCount > AllowedRequestCount)
+                throttleInfo.RequestCount++;
+                cache[key] = throttleInfo;
+
+                if (throttleInfo.RequestCount > MaximumRequestCount)
                 {
                     filterContext.Result = new ContentResult
                     {

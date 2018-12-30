@@ -125,8 +125,7 @@ namespace VotingWeb.Controllers
         /// </summary>
         /// <returns></returns>
         // GET: api/Votes/LiveVotingResult
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 1, TimeDurationInSeconds = 7)]
-        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 50, TimeDurationInSeconds = 1)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, MaximumRequestCount = 1, ExpiryTimeInSeconds = 8)]
         [HttpGet("LiveVotingResult")]
         public async Task<IActionResult> GetLiveVotingResult()
         {
@@ -168,8 +167,7 @@ namespace VotingWeb.Controllers
         /// <param name="aadharNo">Aadhar no</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/SubmitAadharNoToSendOtp/aadharNo
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInSeconds = 900, AllowedRequestCount = 5)]
-        [Throttle(ThrottleOn = ThrottleOn.Path, TimeDurationInSeconds = 1, AllowedRequestCount = 100)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, ExpiryTimeInSeconds = 900, MaximumRequestCount = 5)]
         [HttpPost("SubmitAadharNoToSendOtp/{aadharNo}")]
         public async Task<IActionResult> SubmitAadharNoToSendOtp(string aadharNo)
         {
@@ -208,8 +206,7 @@ namespace VotingWeb.Controllers
         /// <param name="userEnteredOtp">User entered otp</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/VerifyOtp/aadharNo/userEnteredOtp
-        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 10, TimeDurationInSeconds = 1)]
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 10, TimeDurationInSeconds = 900)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, MaximumRequestCount = 10, ExpiryTimeInSeconds = 900)]
         [HttpPost("VerifyOtp/{aadharNo}/{userEnteredOtp}")]
         public async Task<IActionResult> VerifyOtp(string aadharNo, string userEnteredOtp)
         {
@@ -247,8 +244,7 @@ namespace VotingWeb.Controllers
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/LinkVoterIdToAadhar
-        [Throttle(ThrottleOn = ThrottleOn.Path, AllowedRequestCount = 10, TimeDurationInSeconds = 1)]
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, AllowedRequestCount = 10, TimeDurationInSeconds = 900)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, MaximumRequestCount = 10, ExpiryTimeInSeconds = 900)]
         [HttpPost("LinkVoterIdToAadhar")]
         public async Task<IActionResult> LinkVoterIdToAadhar([FromBody] UserDetails userDetails)
         {
@@ -285,8 +281,7 @@ namespace VotingWeb.Controllers
         /// <param name="userDetails">User details</param>
         /// <returns>Action result</returns>
         // POST: api/Votes/CastVote
-        [Throttle(ThrottleOn = ThrottleOn.IpAddress, TimeDurationInSeconds = 900, AllowedRequestCount = 5)]
-        [Throttle(ThrottleOn = ThrottleOn.Path, TimeDurationInSeconds = 1, AllowedRequestCount = 100)]
+        [Throttle(ThrottleOn = ThrottleOn.IpAddress, ExpiryTimeInSeconds = 900, MaximumRequestCount = 5)]
         [HttpPost("CastVote")]
         public async Task<IActionResult> CastVote([FromBody] UserDetails userDetails)
         {
