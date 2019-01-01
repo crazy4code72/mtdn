@@ -293,9 +293,19 @@
                     return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.VotingFailed };
                 }
 
-                // Produce to kafka topic
-                await voteDataHelper.ProduceToKafkaTopic(userDetails);
+                // Add to state and produce to kafka topic after succesful addition in state.
                 await voteDataHelper.UpsertKeyValuePairInState(userDetails.VoterId, userDetails.VoteFor, Enums.StateName.VoterIdVoteForPair.ToString());
+
+                try
+                {
+                    await voteDataHelper.ProduceToKafkaTopic(userDetails);
+                }
+                catch (Exception)
+                {
+                    await voteDataHelper.DeleteFromState(Enums.StateName.VoterIdVoteForPair.ToString(), userDetails.VoterId);
+                    return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.VotingFailed };
+                }
+
                 return new ContentResult { StatusCode = (int)Enums.CastVoteStatus.SuccessfullyVoted };
             }
             catch (Exception)

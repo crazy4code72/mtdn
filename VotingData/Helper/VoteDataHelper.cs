@@ -105,5 +105,27 @@
                 await Task.WhenAll(tasks);
             }
         }
+
+        /// <summary>
+        /// Delete the given key from the category dictionary.
+        /// </summary>
+        /// <param name="stateName">State name</param>
+        /// <param name="key">Key</param>
+        /// <returns>Task</returns>
+        internal async Task<bool> DeleteFromState(string stateName, string key)
+        {
+            IReliableDictionary<string, string> votesDictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, string>>(stateName);
+
+            using (ITransaction tx = this.stateManager.CreateTransaction())
+            {
+                if (await votesDictionary.ContainsKeyAsync(tx, key))
+                {
+                    await votesDictionary.TryRemoveAsync(tx, key);
+                    await tx.CommitAsync();
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }
